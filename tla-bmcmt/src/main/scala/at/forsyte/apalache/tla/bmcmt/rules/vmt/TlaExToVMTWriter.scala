@@ -20,13 +20,13 @@ import scalaz.unused
 class TlaExToVMTWriter(gen: UniqueNameGenerator) {
   // Main entry point.
   def annotateAndWrite(
-                        // funDecls: Seq[FunDef], // not working
-                        varDecls: Seq[TlaVarDecl],
-                        constDecls: Seq[TlaConstDecl],
-                        @unused cInit: Seq[(String, TlaEx)],
-                        initTransitions: Seq[(String, TlaEx)],
-                        nextTransitions: Seq[(String, TlaEx)],
-                        invariants: Seq[(String, TlaEx)]): Unit = {
+      // funDecls: Seq[FunDef], // not working
+      varDecls: Seq[TlaVarDecl],
+      constDecls: Seq[TlaConstDecl],
+      @unused cInit: Seq[(String, TlaEx)],
+      initTransitions: Seq[(String, TlaEx)],
+      nextTransitions: Seq[(String, TlaEx)],
+      invariants: Seq[(String, TlaEx)]): Unit = {
 
     // First, we parse the constant declarations, to extract all restricted sets, i.e.,
     // constants typed with SetT1(ConsT1(_))

@@ -32,7 +32,7 @@ class ToTermRewriterImpl(constSets: ConstSetMapT, gen: UniqueNameGenerator) exte
 
 object ToTermRewriterImpl {
   def apply(
-             constSets: ConstSetMapT = Map.empty,
-             generator: UniqueNameGenerator = new UniqueNameGenerator): ToTermRewriter =
+      constSets: ConstSetMapT = Map.empty,
+      generator: UniqueNameGenerator = new UniqueNameGenerator): ToTermRewriter =
     new ToTermRewriterImpl(constSets, generator)
 }

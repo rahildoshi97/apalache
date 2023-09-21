@@ -13,10 +13,11 @@ class ToTermRewriterImpl(constSets: ConstSetMapT, gen: UniqueNameGenerator) exte
   // Less optimized rule lookup than SymbStateRewriter, since we have fewer rules, just search the list
   private val setJudgement = new RestrictedSetJudgement(constSets)
   private val rules: List[FormulaRule] = List(
-      new BoolRule(this),
-      new QuantifierRule(this, setJudgement),
-      new EUFRule(this, setJudgement, gen),
-      new ValueRule,
+    new BoolRule(this),
+    new QuantifierRule(this, setJudgement),
+    new EUFRule(this, setJudgement, gen),
+    new ValueRule,
+    new IntRule(this),
   )
 
   override def rewrite(ex: TlaEx): TermBuilderT =
@@ -31,7 +32,7 @@ class ToTermRewriterImpl(constSets: ConstSetMapT, gen: UniqueNameGenerator) exte
 
 object ToTermRewriterImpl {
   def apply(
-      constSets: ConstSetMapT = Map.empty,
-      generator: UniqueNameGenerator = new UniqueNameGenerator): ToTermRewriter =
+             constSets: ConstSetMapT = Map.empty,
+             generator: UniqueNameGenerator = new UniqueNameGenerator): ToTermRewriter =
     new ToTermRewriterImpl(constSets, generator)
 }

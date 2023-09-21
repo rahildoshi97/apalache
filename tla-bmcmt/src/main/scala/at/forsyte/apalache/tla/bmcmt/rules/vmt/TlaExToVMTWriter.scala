@@ -20,12 +20,13 @@ import scalaz.unused
 class TlaExToVMTWriter(gen: UniqueNameGenerator) {
   // Main entry point.
   def annotateAndWrite(
-      varDecls: Seq[TlaVarDecl],
-      constDecls: Seq[TlaConstDecl],
-      @unused cInit: Seq[(String, TlaEx)],
-      initTransitions: Seq[(String, TlaEx)],
-      nextTransitions: Seq[(String, TlaEx)],
-      invariants: Seq[(String, TlaEx)]): Unit = {
+                        // funDecls: Seq[FunDef], // not working
+                        varDecls: Seq[TlaVarDecl],
+                        constDecls: Seq[TlaConstDecl],
+                        @unused cInit: Seq[(String, TlaEx)],
+                        initTransitions: Seq[(String, TlaEx)],
+                        nextTransitions: Seq[(String, TlaEx)],
+                        invariants: Seq[(String, TlaEx)]): Unit = {
 
     // First, we parse the constant declarations, to extract all restricted sets, i.e.,
     // constants typed with SetT1(ConsT1(_))
@@ -40,10 +41,10 @@ class TlaExToVMTWriter(gen: UniqueNameGenerator) {
     val rewriter = new ToTermRewriterImpl(setConstants, gen)
 
     // Not sure what to do with CInits yet, we might want to add them ass axioms later
-//    val cinits = cInit.map { case (_, ex) =>
-//      rewriter.rewrite(ex)
-//    }
-//    val cinitStrs = cinits.map(TermToVMTWriter.mkSMT2String)
+    //    val cinits = cInit.map { case (_, ex) =>
+    //      rewriter.rewrite(ex)
+    //    }
+    //    val cinitStrs = cinits.map(TermToVMTWriter.mkSMT2String)
 
     // convenience shorthand
     def rewrite: TlaEx => TermBuilderT = rewriter.rewrite
@@ -99,8 +100,108 @@ class TlaExToVMTWriter(gen: UniqueNameGenerator) {
       (if (litsForSortS.size > 1) Some(litsForSortS) else None).map(TermToVMTWriter.assertDistinct)
     }
 
+    // Prime variable declarations // added
+    val smtVarDeclsPrime = varDecls.map(TermToVMTWriter.mkSMTDeclPrime) // added
+
+    // Function declarations // added
+    // val smtFunDecls = funDecls.map(TermToVMTWriter.mkFunDef) // added // not working
+
+    // Variable type declaration
+    val smtVarType = varDecls.map(TermToVMTWriter.mkSMTVarType) // added
+
+    // Variable declaration
+    val smtVar = varDecls.map(TermToVMTWriter.mkSMTVar) // added
+
+    // Prime variable declaration
+    val smtVarPrime = varDecls.map(TermToVMTWriter.mkSMTVarPrime) // added
+
     OutputManager.withWriterInRunDir(TlaExToVMTWriter.outFileName) { writer =>
-      writer.println(";Sorts")
+
+      // smtVarDecls.foreach(writer.println) // (val1 Bool) (val2 Int)
+      // smtVarDeclsPrime.foreach(writer.println) // (val1.prime Bool) (val2.prime Int)
+      // smtVarType.foreach(writer.println) // BoolInt
+      // smtVar.foreach(writer.println) // var1var2
+      // smtVarPrime.foreach(writer.println) //val1.prime val2.prime
+      // smtFunDecls.foreach(writer.println) // not working
+      // writer.println() // function declaration not working
+      // writer.print(s"(declare-fun pred (${smtVarType.foreach(writer.print)}) Bool)") // does not work
+      writer.println("(set-logic HORN)")
+      writer.println()
+      writer.print(s"(declare-fun pred (")
+      smtVarType.foreach(writer.print)
+      writer.print(s") Bool)")
+
+      writer.println()
+      writer.println()
+
+      writer.println(";Init")
+      writer.print(s"(assert\n\t(forall (")
+      smtVarDecls.foreach(writer.print)
+      writer.print(s")\n\t\t(=>\n\t\t\t")
+      initStrs.foreach(writer.print)
+      writer.print(s"\n\t\t\t(pred ")
+      smtVar.foreach(writer.print)
+      writer.print(s")\n\t\t)\n\t)\n)")
+
+      writer.println()
+      writer.println()
+      /*
+      for ((transStrs, index) <- transStrs.zipWithIndex) { // testing
+        //writer.print(s"Element at index $index: $transStrs")
+        writer.print(s"$transStrs")
+      }
+      */
+      for ((transStrs, index) <- transStrs.zipWithIndex) {
+        writer.println(";Next")
+        writer.print(s"(assert\n\t(forall (")
+        smtVarDecls.foreach(writer.print)
+        smtVarDeclsPrime.foreach(writer.print)
+        writer.print(s")\n\t\t(=>\n\t\t\t(and (pred ")
+        smtVar.foreach(writer.print)
+        writer.print(s")") // )\n\t\t\t
+        //transStrs.foreach(writer.print)
+        writer.print(s"$transStrs")
+        writer.print(s")\n\t\t\t(pred ")
+        smtVarPrime.foreach(writer.print)
+        writer.print(s")\n\t\t)\n\t)\n)\n")
+      }
+
+      writer.println()
+      /*
+      for (index <- 0 until transStrs.size) { // testing
+        val element = transStrs(index)
+        //writer.print(s"Element at index $index: $element")
+        writer.print(s"$element")
+      }
+
+      for (index <- 0 until transStrs.size) {
+        val element = transStrs(index)
+        //writer.print(s"Element at index $index: $transStrs")
+        //writer.print(s"$transStrs")
+        writer.println(";Next")
+        writer.print(s"(assert\n\t(forall (")
+        smtVarDecls.foreach(writer.print)
+        smtVarDeclsPrime.foreach(writer.print)
+        writer.print(s")\n\t\t(=>\n\t\t\t(and (pred ")
+        smtVar.foreach(writer.print)
+        writer.print(s")") // )\n\t\t\t
+        //transStrs.foreach(writer.print)
+        writer.print(s"$element")
+        writer.print(s")\n\t\t\t(pred ")
+        smtVarPrime.foreach(writer.print)
+        writer.print(s")\n\t\t)\n\t)\n)\n")
+      }
+      */
+      writer.println(s"(check-sat)")
+      //writer.println(s"(get-model)")
+      writer.println(s"(exit)")
+
+      /*writer.println(s"transStr size")
+      writer.println(transStrs.size)
+      writer.println(s"nextTransitions size")
+      writer.println(nextTransitions.size)*/
+
+      /*writer.println(";Sorts")
       sortDecls.foreach(writer.println)
       writer.println()
       writer.println(";Constants")
@@ -124,7 +225,7 @@ class TlaExToVMTWriter(gen: UniqueNameGenerator) {
       transStrs.foreach(writer.println)
       writer.println()
       writer.println(";Invariants")
-      invStrs.foreach(writer.println)
+      invStrs.foreach(writer.println)*/
     }
   }
 

@@ -72,6 +72,17 @@ object TermToVMTWriter {
       case Equal(a, b)                   => s"(= ${tr(a)} ${tr(b)})"
       case Apply(fn, args @ _*)          => s"(${tr(fn)} ${args.map(tr).mkString(" ")})"
       case ITE(cond, thenTerm, elseTerm) => s"(ite ${tr(cond)} ${tr(thenTerm)} ${tr(elseTerm)})"
+
+      case Lt(a, b)                      => s"(< ${tr(a)} ${tr(b)})"
+      case Le(a, b)                      => s"(<= ${tr(a)} ${tr(b)})"
+      case Gt(a, b)                      => s"(> ${tr(a)} ${tr(b)})"
+      case Ge(a, b)                      => s"(>= ${tr(a)} ${tr(b)})"
+      case Plus(a, b)                    => s"(+ ${tr(a)} ${tr(b)})"
+      case Minus(a, b)                   => s"(- ${tr(a)} ${tr(b)})"
+      case Uminus(x)                     => s"(- ${tr(x)})"
+      case Mult(a, b)                    => s"(* ${tr(a)} ${tr(b)})"
+      case Div(a, b)                     => s"(/ ${tr(a)} ${tr(b)})"
+      case Mod(a, b)                     => s"(mod ${tr(a)} ${tr(b)})"
       case x                             => throw new NotImplementedError(s"${x.getClass.getName} is not supported.")
 
     }
@@ -81,11 +92,59 @@ object TermToVMTWriter {
     d.typeTag match {
       case Typed(tt: TlaType1) =>
         val (froms, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt))
-        def mkDecl(name: String) = s"(declare-fun $name (${froms.mkString(" ")}) $to)"
-        s"${mkDecl(d.name)}\n${mkDecl(VMTprimeName(d.name))}"
+        //def mkDecl(name: String) = s"(declare-fun $name (${froms.mkString(" ")}) $to)"
+        def mkDecl(name: String) = s"($name $to) "
+        //s"${mkDecl(d.name)}\n${mkDecl(VMTprimeName(d.name))}"
+        s"${mkDecl(d.name)}"
 
       case _ => ""
-    }
+    } // (val1 Bool) (val2 Int)
+
+  // Constructs an SMT prime variable declaration from a TLA variable declaration
+  def mkSMTDeclPrime(d: TlaVarDecl): String =
+    d.typeTag match {
+      case Typed(tt: TlaType1) =>
+        val (froms, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
+        def mkDecl(name: String) = s"($name $to) "
+        s"${mkDecl(VMTprimeName(d.name))}"
+
+      case _ => ""
+    } // (val1.prime Bool) (val2.prime Int)
+
+  // Constructs an SMT variable type declaration from a TLA variable declaration
+  def mkSMTVarType(d: TlaVarDecl): String =
+    d.typeTag match {
+      case Typed(tt: TlaType1) =>
+        val (froms, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
+        def mkDecl(name: String) = s"$to "
+        s"${mkDecl(d.name)}"
+
+      case _ => ""
+    } // Bool Int
+
+  // Constructs an SMT variable declaration from a TLA variable declaration
+  def mkSMTVar(d: TlaVarDecl): String =
+    d.typeTag match {
+      case Typed(tt: TlaType1) =>
+        val (froms, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
+        def mkDecl(name: String) = s"$name "
+        s"${mkDecl(d.name)}"
+
+      case _ => ""
+    } // val1 val2
+
+  // Constructs an SMT variable prime declaration from a TLA variable declaration
+  def mkSMTVarPrime(d: TlaVarDecl): String =
+    d.typeTag match {
+      case Typed(tt: TlaType1) =>
+        val (froms, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
+
+        def mkDecl(name: String) = s"$name "
+
+        s"${mkDecl(VMTprimeName(d.name))}"
+
+      case _ => ""
+    } // val1.prime val2,prime
 
   // Constructs an SMT sort declaration for a non-parametric sort.
   def mkSortDecl(us: UninterpretedSort): String =
@@ -132,8 +191,10 @@ object TermToVMTWriter {
           else s"($currentStr ${dummyNamesAndSorts.map(_._1).mkString(" ")})"
 
         s"(define-fun $name (${fromParis.mkString(" ")}) ${to} (! $currentApp :next ${tr(next)}))"
-      case Init(name, init)      => s"(define-fun $name () Bool (! ${tr(init)} :init true))"
+      // case Init(name, init)      => s"(define-fun $name () Bool (! ${tr(init)} :init true))"
+      case Init(name, init)      => s"${tr(init)}"
       case Invar(name, idx, inv) => s"(define-fun $name () Bool (! ${tr(inv)} :invar-property $idx))"
-      case Trans(name, trEx)     => s"(define-fun $name () Bool (! ${tr(trEx)} :action $name))"
+      // case Trans(name, trEx)     => s"(define-fun $name () Bool (! ${tr(trEx)} :action $name))"
+      case Trans(name, trEx) => s"\n\t\t\t${tr(trEx)}"
     }
 }

@@ -1,6 +1,7 @@
 package at.forsyte.apalache.infra.passes.options
 
 import at.forsyte.apalache.infra.PassOptionException
+import at.forsyte.apalache.infra.passes.options.Config.Transpiler
 import at.forsyte.apalache.infra.tlc.TlcConfigParserApalache
 import at.forsyte.apalache.infra.tlc.config.{BehaviorSpec, InitNextSpec, TlcConfig, TlcConfigParseError}
 import at.forsyte.apalache.tla.lir.Feature
@@ -101,6 +102,8 @@ object Config {
    *   Whether or not to write general profiling data into the `runDir`
    * @param features
    *   Control experimental features
+   * @param encodingType
+   *   the encoding type to use
    */
   case class Common(
       command: Option[String] = None,
@@ -115,6 +118,14 @@ object Config {
       extends Config[Common] {
 
     def empty: Common = Generic[Common].from(Generic[Common].to(this).map(emptyPoly))
+  }
+
+  case class Transpiler(
+      encodingType: Option[EncodingType] = Some(EncodingType.VMT),
+      view: Option[String] = None)
+    extends Config[Transpiler] {
+
+    def empty: Transpiler = Generic[Transpiler].from(Generic[Transpiler].to(this).map(emptyPoly))
   }
 
   /**
@@ -257,6 +268,7 @@ object Config {
       input: Input = Input(),
       output: Output = Output(),
       checker: Checker = Checker(),
+      transpiler: Transpiler = Transpiler(),
       typechecker: Typechecker = Typechecker(),
       tracee: Tracee = Tracee(),
       server: Server = Server())
@@ -376,7 +388,26 @@ object SMTEncoding {
     case oddEncodingType => throw new IllegalArgumentException(s"Unexpected SMT encoding type $oddEncodingType")
   }
 }
+//=========================================================================================================
+/** Defines the SMT encoding options supported */
+sealed abstract class EncodingType
 
+// TODO: Move into at.forsyte.apalache.tla.lir.Feature?
+object EncodingType {
+  final case object VMT extends EncodingType {
+    override def toString: String = "vmt"
+  }
+  final case object CHC extends EncodingType {
+    override def toString: String = "chc"
+  }
+
+  val ofString: String => EncodingType = {
+    case "chc"         => CHC
+    case "vmt"         => VMT
+    case oddEncodingType => throw new IllegalArgumentException(s"Unexpected encoding type $oddEncodingType")
+  }
+}
+//=========================================================================================================
 /** Defines the bmcmt model options supported */
 sealed abstract class Algorithm
 

@@ -1,11 +1,12 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.chc
 
 import at.forsyte.apalache.tla.bmcmt.RewriterException
+//import at.forsyte.apalache.tla.bmcmt.rules.vmt.{FormulaRule, TermBuilderT, ToTermRewriter}
 import at.forsyte.apalache.tla.lir.formulas.Integers._
 import at.forsyte.apalache.tla.lir.oper.TlaArithOper
 import at.forsyte.apalache.tla.lir.{OperEx, TlaEx}
 
-class IntRule(rewriter: ToTermRewriter) extends FormulaRule {
+class IntRuleForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRule {
   override def isApplicable(ex: TlaEx): Boolean = {
     ex match {
       case OperEx(TlaArithOper.plus | TlaArithOper.minus | TlaArithOper.uminus | TlaArithOper.mult | TlaArithOper.div | TlaArithOper.mod, _*) =>
@@ -15,10 +16,10 @@ class IntRule(rewriter: ToTermRewriter) extends FormulaRule {
   }
 
   // convenience shorthand
-  private def rewrite: TlaEx => TermBuilderT = rewriter.rewrite
+  private def rewrite: TlaEx => TermBuilderTForCHC = rewriter.rewrite
 
   // Assume isApplicable
-  override def apply(ex: TlaEx): TermBuilderT =
+  override def apply(ex: TlaEx): TermBuilderTForCHC =
     ex match {
       case OperEx(TlaArithOper.plus, lhs, rhs) =>
         for {
@@ -46,6 +47,6 @@ class IntRule(rewriter: ToTermRewriter) extends FormulaRule {
           lhsTerm <- rewrite(lhs)
           rhsTerm <- rewrite(rhs)
         } yield Mod(lhsTerm, rhsTerm)
-      case _ => throw new RewriterException(s"IntRule not applicable to $ex", ex)
+      case _ => throw new RewriterException(s"IntRuleForCHC not applicable to $ex", ex)
     }
 }

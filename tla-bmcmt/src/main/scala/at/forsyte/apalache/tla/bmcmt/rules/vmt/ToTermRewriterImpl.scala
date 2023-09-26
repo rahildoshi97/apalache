@@ -17,6 +17,7 @@ class ToTermRewriterImpl(constSets: ConstSetMapT, gen: UniqueNameGenerator) exte
       new QuantifierRule(this, setJudgement),
       new EUFRule(this, setJudgement, gen),
       new ValueRule,
+      new IntRule(this),
   )
 
   override def rewrite(ex: TlaEx): TermBuilderT =

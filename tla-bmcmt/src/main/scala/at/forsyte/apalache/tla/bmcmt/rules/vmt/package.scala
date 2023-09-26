@@ -71,7 +71,7 @@ package object vmt {
    * Since ['] is not a legal symbol in SMTLIB, we have to choose a convention for the names of primed variables. If `x`
    * is a variable name, then `x^` is the name used to represent `x'` in SMTLIB.
    */
-  def VMTprimeName(s: String) = s"$s^"
+  def VMTprimeName(s: String) = s"$s.prime"
   // Apply VMTprimeName to NameEx directly
   def renamePrimesForVMT(unprimedNameEx: NameEx): NameEx =
     NameEx(VMTprimeName(unprimedNameEx.name))(unprimedNameEx.typeTag)

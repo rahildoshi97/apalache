@@ -111,17 +111,17 @@ object ReTLALanguagePred {
         TlaOper.eq,
         TlaOper.ne,
         // IntArith not in v1
-        //        TlaArithOper.div,
-        //        TlaArithOper.exp,
-        //        TlaArithOper.ge,
-        //        TlaArithOper.gt,
-        //        TlaArithOper.le,
-        //        TlaArithOper.lt,
-        //        TlaArithOper.minus,
-        //        TlaArithOper.mod,
-        //        TlaArithOper.mult,
-        //        TlaArithOper.plus,
-        //        TlaArithOper.uminus,
+        TlaArithOper.div,
+        TlaArithOper.exp,
+        TlaArithOper.ge,
+        TlaArithOper.gt,
+        TlaArithOper.le,
+        TlaArithOper.lt,
+        TlaArithOper.minus,
+        TlaArithOper.mod,
+        TlaArithOper.mult,
+        TlaArithOper.plus,
+        TlaArithOper.uminus,
     )
 
   def apply(): ReTLALanguagePred = singleton

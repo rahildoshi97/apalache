@@ -9,7 +9,7 @@ import at.forsyte.apalache.tla.lir._
  * @author
  *   Jure Kukovec
  */
-object TlaType1ToSortConverter {
+object TlaType1ToSortConverterForCHC {
 
   def sortFromType(tt: TlaType1): Sort = tt match {
     case IntT1                        => IntSort

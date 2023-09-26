@@ -9,7 +9,7 @@ import at.forsyte.apalache.tla.lir.TlaEx
  * @author
  *   Jure Kukovec
  */
-trait FormulaRule {
+trait FormulaRuleForCHC {
   def isApplicable(ex: TlaEx): Boolean
 
   def apply(ex: TlaEx): TermBuilderTForCHC

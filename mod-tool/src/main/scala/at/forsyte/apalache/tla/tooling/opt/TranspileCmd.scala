@@ -1,8 +1,8 @@
 package at.forsyte.apalache.tla.tooling.opt
 
 import at.forsyte.apalache.io.OutputManager
-import at.forsyte.apalache.tla.bmcmt.config.ReTLAToCHCModule
-//import at.forsyte.apalache.tla.bmcmt.rules.vmt.TlaExToVMTWriter
+import at.forsyte.apalache.tla.bmcmt.config.{ReTLAToCHCModule, ReTLAToVMTModule}
+import at.forsyte.apalache.tla.bmcmt.rules.vmt.TlaExToVMTWriter
 import at.forsyte.apalache.tla.bmcmt.rules.chc.TlaExToCHCWriter
 import at.forsyte.apalache.infra.passes.options.{EncodingType, OptionGroup}
 import at.forsyte.apalache.infra.passes.PassChainExecutor

@@ -18,7 +18,7 @@ import at.forsyte.apalache.tla.types.ModelValueHandler
  * @author
  *   Jure Kukovec
  */
-class ValueRule extends FormulaRule {
+class ValueRuleForCHC extends FormulaRuleForCHC {
 
   def isApplicable(ex: TlaEx): Boolean =
     ex match {
@@ -28,7 +28,7 @@ class ValueRule extends FormulaRule {
       case _                                         => false
     }
 
-  import ValueRule._
+  import ValueRuleForCHC._
 
   def apply(ex: TlaEx): TermBuilderTForCHC = {
     val term = ex match {
@@ -52,7 +52,7 @@ class ValueRule extends FormulaRule {
 }
 
 // Some generic utility methods
-object ValueRule {
+object ValueRuleForCHC {
 
   def throwOn[T](ex: TlaEx): T =
     throw new RewriterException(s"ValueRule not applicable to $ex", ex)
@@ -61,7 +61,7 @@ object ValueRule {
   def termFromNameEx(ex: NameEx): Variable =
     ex.typeTag match {
       case Typed(tt: TlaType1) =>
-        val sort = TlaType1ToSortConverter.sortFromType(tt)
+        val sort = TlaType1ToSortConverterForCHC.sortFromType(tt)
         mkVariable(ex.name, sort)
       case Untyped =>
         mkVariable(ex.name, UntypedSort)

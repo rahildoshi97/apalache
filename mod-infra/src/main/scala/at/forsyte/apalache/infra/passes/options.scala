@@ -401,9 +401,9 @@ object EncodingType {
     override def toString: String = "chc"
   }
 
-  val ofString: String => EncodingType = {
-    case "chc"         => CHC
-    case "vmt"         => VMT
+  val ofString: String   => EncodingType = {
+    case "chc"           => CHC
+    case "vmt"           => VMT
     case oddEncodingType => throw new IllegalArgumentException(s"Unexpected encoding type $oddEncodingType")
   }
 }

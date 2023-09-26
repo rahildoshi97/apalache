@@ -21,7 +21,7 @@ class TestQuantRuleForCHC extends AnyFunSuite {
 
   val rewriter: ToTermRewriterForCHC = ToTermRewriterImplForCHC(constSets)
 
-  val rule: FormulaRule = new QuantifierRule(rewriter, new RestrictedSetJudgement(constSets))
+  val rule: FormulaRuleForCHC = new QuantifierRuleForCHC(rewriter, new RestrictedSetJudgementForCHC(constSets))
 
   val b: TlaType1 = BoolT1
 

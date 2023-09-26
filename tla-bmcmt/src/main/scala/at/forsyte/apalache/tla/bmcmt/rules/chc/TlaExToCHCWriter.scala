@@ -1,5 +1,5 @@
 package at.forsyte.apalache.tla.bmcmt.rules.chc
-//import at.forsyte.apalache.tla.bmcmt.rules.vmt
+
 import at.forsyte.apalache.io.OutputManager
 import at.forsyte.apalache.tla.bmcmt.rules.chc.TermBuilderTForCHC
 import at.forsyte.apalache.tla.lir.TypedPredefs.TypeTagAsTlaType1
@@ -79,7 +79,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
 
     // Each variable v in varDecls needs the VMT binding Next(v, v')
     val nextBindings = varDecls.map { case d @ TlaVarDecl(name) =>
-      val sort = TlaType1ToSortConverter.sortFromType(d.typeTag.asTlaType1())
+      val sort = TlaType1ToSortConverterForCHC.sortFromType(d.typeTag.asTlaType1())
       Next(nextName(name), mkVariable(name, sort), mkVariable(CHCprimeName(name), sort))
     }
 
@@ -104,9 +104,6 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
     // Prime variable declarations // added
     val smtVarDeclsPrime = varDecls.map(TermToCHCWriter.mkSMTDeclPrime) // added
 
-    // Function declarations // added
-    // val smtFunDecls = funDecls.map(TlaExToCHCWriter.mkFunDef) // added // not working
-
     // Variable type declaration
     val smtVarType = varDecls.map(TermToCHCWriter.mkSMTVarType) // added
 
@@ -123,9 +120,6 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       // smtVarType.foreach(writer.println) // BoolInt
       // smtVar.foreach(writer.println) // var1var2
       // smtVarPrime.foreach(writer.println) //val1.prime val2.prime
-      // smtFunDecls.foreach(writer.println) // not working
-      // writer.println() // function declaration not working
-      // writer.print(s"(declare-fun pred (${smtVarType.foreach(writer.print)}) Bool)") // does not work
       writer.println("(set-logic HORN)")
       writer.println()
       writer.print(s"(declare-fun pred (")

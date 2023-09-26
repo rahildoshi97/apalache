@@ -14,7 +14,7 @@ import at.forsyte.apalache.tla.lir.{NameEx, TlaEx, ValEx}
  * @author
  *   Jure Kukovec
  */
-class RestrictedSetJudgement(constSets: Map[String, UninterpretedSort]) {
+class RestrictedSetJudgementForCHC(constSets: Map[String, UninterpretedSort]) {
   def isRestrictedSet(ex: TlaEx): Boolean =
     ex match {
       case ValEx(s: TlaPredefSet) =>

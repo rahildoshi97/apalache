@@ -1,12 +1,11 @@
 package at.forsyte.apalache.tla.bmcmt.rules.chc
 
 import at.forsyte.apalache.tla.bmcmt.RewriterException
-//import at.forsyte.apalache.tla.bmcmt.rules.vmt.{FormulaRule, TermBuilderT, ToTermRewriter}
 import at.forsyte.apalache.tla.lir.formulas.Integers._
 import at.forsyte.apalache.tla.lir.oper.TlaArithOper
 import at.forsyte.apalache.tla.lir.{OperEx, TlaEx}
 
-class IntRuleForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRule {
+class IntRuleForCHCForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRuleForCHC {
   override def isApplicable(ex: TlaEx): Boolean = {
     ex match {
       case OperEx(TlaArithOper.plus | TlaArithOper.minus | TlaArithOper.uminus | TlaArithOper.mult | TlaArithOper.div | TlaArithOper.mod, _*) =>

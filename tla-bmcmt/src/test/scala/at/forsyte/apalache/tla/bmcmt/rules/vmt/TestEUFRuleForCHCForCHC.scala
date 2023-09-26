@@ -13,7 +13,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class TestEUFRuleForCHC extends AnyFunSuite {
+class TestEUFRuleForCHCForCHC extends AnyFunSuite {
 
   val sType: TlaType1 = ConstT1("SSORT")
   val sSort: UninterpretedSort = UninterpretedSort("SSORT")
@@ -29,7 +29,7 @@ class TestEUFRuleForCHC extends AnyFunSuite {
   val fType: TlaType1 = FunT1(TupT1(sType, IntT1), sType)
   val f: TBuilderInstruction = tla.name(funName, fType)
 
-  val rule: FormulaRule = new EUFRule(rewriter, new RestrictedSetJudgement(constSets), constGen)
+  val rule: FormulaRuleForCHC = new EUFRuleForCHCForCHC(rewriter, new RestrictedSetJudgementForCHC(constSets), constGen)
 
   val b: TlaType1 = BoolT1
 

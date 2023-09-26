@@ -1,6 +1,5 @@
 package at.forsyte.apalache.tla.bmcmt.rules.chc
 
-//import at.forsyte.apalache.tla.bmcmt.rules.vmt._
 import at.forsyte.apalache.tla.lir.formulas.Booleans._
 import at.forsyte.apalache.tla.lir.formulas.EUF._
 import at.forsyte.apalache.tla.lir.formulas.Integers._
@@ -92,10 +91,8 @@ object TermToCHCWriter {
   def mkSMTDecl(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms@_, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt))
-        //def mkDecl(name: String) = s"(declare-fun $name (${froms.mkString(" ")}) $to)"
+        val (froms@_, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
         def mkDecl(name: String) = s"($name $to) "
-        //s"${mkDecl(d.name)}\n${mkDecl(VMTprimeName(d.name))}"
         s"${mkDecl(d.name)}"
 
       case _ => ""
@@ -105,7 +102,7 @@ object TermToCHCWriter {
   def mkSMTDeclPrime(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms@_, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
+        val (froms@_, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
         def mkDecl(name: String) = s"($name $to) "
         s"${mkDecl(CHCprimeName(d.name))}"
 
@@ -116,7 +113,7 @@ object TermToCHCWriter {
   def mkSMTVarType(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms@_, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
+        val (froms@_, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
         def mkDecl(name: String) = s"$to "
         s"${mkDecl(d.name)}"
 
@@ -127,7 +124,7 @@ object TermToCHCWriter {
   def mkSMTVar(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms@_, to@_) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
+        val (froms@_, to@_) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
         def mkDecl(name: String) = s"$name "
         s"${mkDecl(d.name)}"
 
@@ -138,7 +135,7 @@ object TermToCHCWriter {
   def mkSMTVarPrime(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms@_, to@_) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
+        val (froms@_, to@_) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
 
         def mkDecl(name: String) = s"$name "
 
@@ -192,10 +189,8 @@ object TermToCHCWriter {
           else s"($currentStr ${dummyNamesAndSorts.map(_._1).mkString(" ")})"
 
         s"(define-fun $name (${fromParis.mkString(" ")}) ${to} (! $currentApp :next ${tr(next)}))"
-      // case Init(name, init)      => s"(define-fun $name () Bool (! ${tr(init)} :init true))"
       case Init(name@_, init)      => s"${tr(init)}"
       case Invar(name, idx, inv) => s"(define-fun $name () Bool (! ${tr(inv)} :invar-property $idx))"
-      // case Trans(name, trEx)     => s"(define-fun $name () Bool (! ${tr(trEx)} :action $name))"
       case Trans(name@_, trEx) => s"\n\t\t\t${tr(trEx)}"
     }
 }

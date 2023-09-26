@@ -1,6 +1,6 @@
 package at.forsyte.apalache.tla.bmcmt.rules.chc
 
-import at.forsyte.apalache.tla.bmcmt.rules.chc.{BoolRuleForCHC, ToTermRewriterImplForCHC}
+import at.forsyte.apalache.tla.bmcmt.rules.chc.{BoolRuleForCHCForCHC, ToTermRewriterImplForCHC}
 import at.forsyte.apalache.tla.lir.formulas.Booleans._
 import at.forsyte.apalache.tla.lir.formulas.Term
 import at.forsyte.apalache.tla.lir._
@@ -14,7 +14,7 @@ import org.scalatestplus.junit.JUnitRunner
 class TestBoolRuleForCHC extends AnyFunSuite {
   val rewriter: ToTermRewriterForCHC = ToTermRewriterImplForCHC()
 
-  val rule: FormulaRule = new BoolRuleForCHC(rewriter)
+  val rule: FormulaRuleForCHC = new BoolRuleForCHCForCHC(rewriter)
 
   val b: TlaType1 = BoolT1
 

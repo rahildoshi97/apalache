@@ -392,7 +392,7 @@ object SMTEncoding {
   }
 }
 //======================================================================================================================
-/** Defines the transpile encoding options supported */
+/** Defines the transpile target options supported */
 sealed abstract class EncodingType
 
 object EncodingType {
@@ -406,7 +406,7 @@ object EncodingType {
   val ofString: String   => EncodingType = {
     case "chc"           => CHC
     case "vmt"           => VMT
-    case oddEncodingType => throw new IllegalArgumentException(s"Unexpected encoding type $oddEncodingType")
+    case oddEncodingType => throw new IllegalArgumentException(s"Unexpected transpile target $oddEncodingType")
   }
 }
 //======================================================================================================================

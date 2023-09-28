@@ -12,11 +12,11 @@ import org.backuity.clist.util.Read
 class TranspileCmd extends AbstractCheckerCmd(name = "transpile", description = "Transpile and quit") {
 
   implicit val encodingTypeRead: Read[EncodingType] =
-    Read.reads[EncodingType]("an encoding type, either vmt or chc")(EncodingType.ofString)
+    Read.reads[EncodingType]("the transpile target, either vmt or chc")(EncodingType.ofString)
 
-  var encodingType: Option[EncodingType] = opt[Option[EncodingType]](name = "encoding-type", useEnv = true, default = None,
+  var encodingType: Option[EncodingType] = opt[Option[EncodingType]](name = "transpile-target", useEnv = true, default = None,
     description =
-      s"the encoding types: ${EncodingType.VMT}, ${EncodingType.CHC} (experimental), default: ${EncodingType.VMT}")
+      s"the transpile targets: ${EncodingType.VMT}, ${EncodingType.CHC} (experimental), default: ${EncodingType.VMT}")
 
   override def toConfig() =
     super.toConfig().map { cfg =>
@@ -59,7 +59,7 @@ class TranspileCmd extends AbstractCheckerCmd(name = "transpile", description = 
           case Right(_) => Right(s"CHC constraints successfully generated at\n$outFilePath")
           case Left(failure) => Left(failure.exitCode, "Failed to generate CHC constraints")
         }
-      case oddEncoding => throw new IllegalArgumentException(s"Unexpected transpiler.encoding-type=$oddEncoding")
+      case oddEncoding => throw new IllegalArgumentException(s"Unexpected transpiler.transpile-target=$oddEncoding")
     }
   }
 }

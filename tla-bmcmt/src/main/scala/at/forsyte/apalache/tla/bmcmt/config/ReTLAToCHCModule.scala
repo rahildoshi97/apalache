@@ -17,7 +17,7 @@ import at.forsyte.apalache.tla.passes.typecheck.EtcTypeCheckerPassImpl
 import com.google.inject.TypeLiteral
 
 /**
- * Transpiels reTLA inputs to VMT
+ * Transpiels reTLA inputs to CHC
  *
  * @author
  *   Jure Kukovec

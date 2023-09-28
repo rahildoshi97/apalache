@@ -35,8 +35,8 @@ class TestQuantRule extends AnyFunSuite {
   val intSet: TBuilderInstruction = tla.intSet()
 
   val expected: Map[TlaEx, BoolExpr] = Map(
-      tla.exists(x, set, p).build -> Exists(List(("x", sSort)), pVar),
-      tla.forall(y, intSet, q).build -> Forall(List(("y", IntSort)), qVar),
+    tla.exists(x, set, p).build -> Exists(List(("x", sSort)), pVar),
+    tla.forall(y, intSet, q).build -> Forall(List(("y", IntSort)), qVar),
   )
 
   test("QuantRule applicability") {
@@ -50,12 +50,12 @@ class TestQuantRule extends AnyFunSuite {
     }
 
     val notApp = List(
-        tla.tuple(tla.int(1), tla.int(2)),
-        tla.funSet(tla.name("S", SetT1(IntT1)), tla.dotdot(tla.int(1), tla.int(42))),
-        tla.unchanged(tla.name("x", IntT1)),
-        tla.and(tla.name("x", BoolT1), tla.name("T", BoolT1), tla.name("p", BoolT1)),
-        tla.int(2),
-        tla.bool(true),
+      tla.tuple(tla.int(1), tla.int(2)),
+      tla.funSet(tla.name("S", SetT1(IntT1)), tla.dotdot(tla.int(1), tla.int(42))),
+      tla.unchanged(tla.name("x", IntT1)),
+      tla.and(tla.name("x", BoolT1), tla.name("T", BoolT1), tla.name("p", BoolT1)),
+      tla.int(2),
+      tla.bool(true),
     )
 
     notApp.foreach { ex =>

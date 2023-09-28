@@ -1,6 +1,5 @@
 package at.forsyte.apalache.tla.bmcmt.rules.chc
 
-import at.forsyte.apalache.tla.bmcmt.rules.chc.{BoolRuleForCHCForCHC, ToTermRewriterImplForCHC}
 import at.forsyte.apalache.tla.lir.formulas.Booleans._
 import at.forsyte.apalache.tla.lir.formulas.Term
 import at.forsyte.apalache.tla.lir._

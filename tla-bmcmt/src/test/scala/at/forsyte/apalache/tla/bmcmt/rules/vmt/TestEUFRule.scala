@@ -12,7 +12,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class TestEUFRuleForCHC extends AnyFunSuite {
+class TestEUFRule extends AnyFunSuite {
 
   val sType: TlaType1 = ConstT1("SSORT")
   val sSort: UninterpretedSort = UninterpretedSort("SSORT")

@@ -23,9 +23,9 @@ class TestBoolRule extends AnyFunSuite {
   val qVar: Term = BoolVar("q")
 
   val expected: Map[TlaEx, BoolExpr] = Map(
-      tla.and(p, q).build -> And(pVar, qVar),
-      tla.not(p).build -> Neg(pVar),
-      tla.or(tla.impl(p, q), p).build -> Or(Impl(pVar, qVar), pVar),
+    tla.and(p, q).build -> And(pVar, qVar),
+    tla.not(p).build -> Neg(pVar),
+    tla.or(tla.impl(p, q), p).build -> Or(Impl(pVar, qVar), pVar),
   )
 
   test("BoolRule applicability") {
@@ -34,12 +34,12 @@ class TestBoolRule extends AnyFunSuite {
     }
 
     val notApp = List(
-        tla.tuple(tla.int(1), tla.int(2)),
-        tla.funSet(tla.name("S", SetT1(IntT1)), tla.dotdot(tla.int(1), tla.int(42))),
-        tla.unchanged(tla.name("x", IntT1)),
-        tla.forall(tla.name("x", IntT1), tla.name("S", SetT1(IntT1)), tla.name("p", BoolT1)),
-        tla.int(2),
-        tla.bool(true),
+      tla.tuple(tla.int(1), tla.int(2)),
+      tla.funSet(tla.name("S", SetT1(IntT1)), tla.dotdot(tla.int(1), tla.int(42))),
+      tla.unchanged(tla.name("x", IntT1)),
+      tla.forall(tla.name("x", IntT1), tla.name("S", SetT1(IntT1)), tla.name("p", BoolT1)),
+      tla.int(2),
+      tla.bool(true),
     )
 
     notApp.foreach { ex =>

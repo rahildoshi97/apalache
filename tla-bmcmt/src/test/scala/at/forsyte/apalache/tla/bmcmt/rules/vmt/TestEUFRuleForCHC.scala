@@ -1,6 +1,5 @@
 package at.forsyte.apalache.tla.bmcmt.rules.chc
 
-import at.forsyte.apalache.tla.bmcmt.rules.chc.ToTermRewriterImplForCHC
 import at.forsyte.apalache.tla.lir.formulas.Booleans._
 import at.forsyte.apalache.tla.lir.formulas.EUF._
 import at.forsyte.apalache.tla.lir.formulas._
@@ -13,7 +12,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class TestEUFRuleForCHCForCHC extends AnyFunSuite {
+class TestEUFRuleForCHC extends AnyFunSuite {
 
   val sType: TlaType1 = ConstT1("SSORT")
   val sSort: UninterpretedSort = UninterpretedSort("SSORT")

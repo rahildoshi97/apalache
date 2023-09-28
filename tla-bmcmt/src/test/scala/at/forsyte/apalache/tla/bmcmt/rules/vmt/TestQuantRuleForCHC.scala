@@ -1,7 +1,6 @@
 package at.forsyte.apalache.tla.bmcmt.rules.chc
 
 import at.forsyte.apalache.tla.bmcmt.RewriterException
-import at.forsyte.apalache.tla.bmcmt.rules.chc.ToTermRewriterImplForCHC
 import at.forsyte.apalache.tla.lir._
 import at.forsyte.apalache.tla.lir.formulas.Booleans._
 import at.forsyte.apalache.tla.lir.formulas._

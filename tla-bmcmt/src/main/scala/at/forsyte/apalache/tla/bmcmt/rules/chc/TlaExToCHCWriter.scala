@@ -1,8 +1,6 @@
 package at.forsyte.apalache.tla.bmcmt.rules.chc
 
 import at.forsyte.apalache.io.OutputManager
-import at.forsyte.apalache.tla.bmcmt.rules.chc.TermBuilderTForCHC
-import at.forsyte.apalache.tla.lir.TypedPredefs.TypeTagAsTlaType1
 import at.forsyte.apalache.tla.lir._
 import at.forsyte.apalache.tla.lir.formulas._
 import at.forsyte.apalache.tla.pp.UniqueNameGenerator
@@ -65,7 +63,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       rewrite(ex).map { Invar(name, i, _) }
     })
 
-    val (smtDeclsForCHC, (inits, transitions, invs)) = (for {
+    val (smtDeclsForCHC@_, (inits, transitions, invs@_)) = (for {
       initTerms <- initCmps
       transitionTerms <- transitionCmps
       invTerms <- invCmps
@@ -75,7 +73,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
 
     val transStrs = transitions.map(TermToCHCWriter.mkVMTString)
 
-    val invStrs = invs.map(TermToCHCWriter.mkVMTString)
+    /*val invStrs = invs.map(TermToCHCWriter.mkVMTString)
 
     // Each variable v in varDecls needs the VMT binding Next(v, v')
     val nextBindings = varDecls.map { case d @ TlaVarDecl(name) =>
@@ -83,12 +81,12 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       Next(nextName(name), mkVariable(name, sort), mkVariable(CHCprimeName(name), sort))
     }
 
-    val nextStrs = nextBindings.map(TermToCHCWriter.mkVMTString)
+    //val nextStrs = nextBindings.map(TermToCHCWriter.mkVMTString)*/
 
     // Variable declarations
     val smtVarDecls = varDecls.map(TermToCHCWriter.mkSMTDecl)
 
-    // Sort declaration
+    /*// Sort declaration
     val allSorts = setConstants.values.toSet ++ smtDeclsForCHC.uninterpretedSorts.map(UninterpretedSort)
     val sortDecls = allSorts.map(TermToCHCWriter.mkSortDecl)
 
@@ -99,7 +97,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
         _.sort == s
       }
       (if (litsForSortS.size > 1) Some(litsForSortS) else None).map(TermToCHCWriter.assertDistinct)
-    }
+    }*/
 
     // Prime variable declarations // added
     val smtVarDeclsPrime = varDecls.map(TermToCHCWriter.mkSMTDeclPrime) // added
@@ -227,5 +225,5 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
 }
 
 object TlaExToCHCWriter {
-  val outFileName = "output.vmt"
+  val outFileName = "output.chc"
 }

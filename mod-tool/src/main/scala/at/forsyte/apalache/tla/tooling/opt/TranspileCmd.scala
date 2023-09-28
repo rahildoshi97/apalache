@@ -32,17 +32,34 @@ class TranspileCmd extends AbstractCheckerCmd(name = "transpile", description = 
 
   def run() = {
     val cfg = configuration.get
-    val options = OptionGroup.WithCheckerPreds(cfg).get
+    val options = OptionGroup.WithTranspiler(cfg).get
 
-    val outFilePath = OutputManager.runDirPathOpt
-      .map { p =>
-        p.resolve(TlaExToCHCWriter.outFileName).toAbsolutePath
-      }
-      .getOrElse(TlaExToCHCWriter.outFileName)
+    val encodingType = options.transpiler.encodingType
 
-    PassChainExecutor.run(new ReTLAToCHCModule(options)) match {
-      case Right(_) => Right(s"CHC constraints successfully generated at\n$outFilePath")
-      case Left(failure) => Left(failure.exitCode, "Failed to generate CHC constraints")
+    encodingType match {
+      case EncodingType.VMT =>
+        val outFilePath = OutputManager.runDirPathOpt
+          .map { p =>
+            p.resolve(TlaExToVMTWriter.outFileName).toAbsolutePath
+          }
+          .getOrElse(TlaExToVMTWriter.outFileName)
+
+        PassChainExecutor.run(new ReTLAToVMTModule(options)) match {
+          case Right(_) => Right(s"VMT constraints successfully generated at\n$outFilePath")
+          case Left(failure) => Left(failure.exitCode, "Failed to generate VMT constraints")
+        }
+      case EncodingType.CHC =>
+        val outFilePath = OutputManager.runDirPathOpt
+          .map { p =>
+            p.resolve(TlaExToCHCWriter.outFileName).toAbsolutePath
+          }
+          .getOrElse(TlaExToCHCWriter.outFileName)
+
+        PassChainExecutor.run(new ReTLAToCHCModule(options)) match {
+          case Right(_) => Right(s"CHC constraints successfully generated at\n$outFilePath")
+          case Left(failure) => Left(failure.exitCode, "Failed to generate CHC constraints")
+        }
+      case oddEncoding => throw new IllegalArgumentException(s"Unexpected transpiler.encoding-type=$oddEncoding")
     }
   }
 }

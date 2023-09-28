@@ -25,7 +25,7 @@ import at.forsyte.apalache.tla.passes.typecheck.EtcTypeCheckerPassImpl
  * @author
  *   Jure Kukovec
  */
-class ReTLAToVMTModule(options: OptionGroup.HasCheckerPreds) extends ToolModule(options) {
+class ReTLAToVMTModule(options: OptionGroup.HasTranspiler) extends ToolModule(options) {
   override def configure(): Unit = {
     // Ensure the given `options` will be bound to any OptionGroup interface
     // See https://stackoverflow.com/questions/31598703/does-guice-binding-bind-subclass-as-well
@@ -37,6 +37,7 @@ class ReTLAToVMTModule(options: OptionGroup.HasCheckerPreds) extends ToolModule(
     bind(classOf[OptionGroup.HasTypechecker]).toInstance(options)
     bind(classOf[OptionGroup.HasChecker]).toInstance(options)
     bind(classOf[OptionGroup.HasCheckerPreds]).toInstance(options)
+    bind(classOf[OptionGroup.HasTranspiler]).toInstance(options)
 
     // The `DerivedPredicate` instance used to communicate specification predicates between passes
     val derivedPreds = DerivedPredicates.Impl()

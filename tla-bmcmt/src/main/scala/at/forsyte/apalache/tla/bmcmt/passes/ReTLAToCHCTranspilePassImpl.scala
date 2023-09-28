@@ -2,7 +2,6 @@ package at.forsyte.apalache.tla.bmcmt.passes
 
 import at.forsyte.apalache.infra.passes.Pass.PassResult
 import at.forsyte.apalache.tla.bmcmt.rules.chc.TlaExToCHCWriter
-//import at.forsyte.apalache.tla.bmcmt.rules.vmt.TlaExToVMTWriter
 import at.forsyte.apalache.tla.lir.oper.TlaActionOper
 import at.forsyte.apalache.tla.lir.transformations.standard.ReplaceFixed
 import at.forsyte.apalache.tla.lir.transformations.{LanguagePred, LanguageWatchdog, TransformationTracker}
@@ -12,7 +11,7 @@ import com.google.inject.Inject
 import com.typesafe.scalalogging.LazyLogging
 
 /**
- * The reTLA to VMT transpilation pass
+ * The reTLA to CHC transpilation pass
  *
  * @author
  *   Jure Kukovec

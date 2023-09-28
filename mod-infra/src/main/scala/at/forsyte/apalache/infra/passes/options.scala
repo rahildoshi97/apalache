@@ -1,7 +1,6 @@
 package at.forsyte.apalache.infra.passes.options
 
 import at.forsyte.apalache.infra.PassOptionException
-import at.forsyte.apalache.infra.passes.options.Config.Transpiler
 import at.forsyte.apalache.infra.tlc.TlcConfigParserApalache
 import at.forsyte.apalache.infra.tlc.config.{BehaviorSpec, InitNextSpec, TlcConfig, TlcConfigParseError}
 import at.forsyte.apalache.tla.lir.Feature
@@ -102,8 +101,6 @@ object Config {
    *   Whether or not to write general profiling data into the `runDir`
    * @param features
    *   Control experimental features
-   * @param encodingType
-   *   the encoding type to use
    */
   case class Common(
       command: Option[String] = None,
@@ -118,14 +115,6 @@ object Config {
       extends Config[Common] {
 
     def empty: Common = Generic[Common].from(Generic[Common].to(this).map(emptyPoly))
-  }
-
-  case class Transpiler(
-      encodingType: Option[EncodingType] = Some(EncodingType.VMT),
-      view: Option[String] = None)
-    extends Config[Transpiler] {
-
-    def empty: Transpiler = Generic[Transpiler].from(Generic[Transpiler].to(this).map(emptyPoly))
   }
 
   /**
@@ -215,7 +204,21 @@ object Config {
     def invOrDefault = inv.getOrElse(List.empty)
     def temporalPropsOrDefault = temporalProps.getOrElse(List.empty)
   }
+  //====================================================================================================================
+  /**
+   * Configuration of transpile evaluation
+   *
+   * @param encodingType
+   * the encoding type to use
+   */
+  case class Transpiler(
+      encodingType: Option[EncodingType] = Some(EncodingType.VMT),
+      view: Option[String] = None)
+      extends Config[Transpiler] {
 
+    def empty: Transpiler = Generic[Transpiler].from(Generic[Transpiler].to(this).map(emptyPoly))
+  }
+  //====================================================================================================================
   /**
    * Configuration of trace evaluation
    *
@@ -388,11 +391,10 @@ object SMTEncoding {
     case oddEncodingType => throw new IllegalArgumentException(s"Unexpected SMT encoding type $oddEncodingType")
   }
 }
-//=========================================================================================================
-/** Defines the SMT encoding options supported */
+//======================================================================================================================
+/** Defines the transpile encoding options supported */
 sealed abstract class EncodingType
 
-// TODO: Move into at.forsyte.apalache.tla.lir.Feature?
 object EncodingType {
   final case object VMT extends EncodingType {
     override def toString: String = "vmt"
@@ -407,7 +409,7 @@ object EncodingType {
     case oddEncodingType => throw new IllegalArgumentException(s"Unexpected encoding type $oddEncodingType")
   }
 }
-//=========================================================================================================
+//======================================================================================================================
 /** Defines the bmcmt model options supported */
 sealed abstract class Algorithm
 
@@ -732,7 +734,23 @@ object OptionGroup extends LazyLogging {
       )
     }
   }
+  //====================================================================================================================
+  /** Options used to configure transpile */
+  case class Transpiler(
+      encodingType: EncodingType)
+    extends OptionGroup
 
+  object Transpiler extends Configurable[Config.Transpiler, Transpiler] with LazyLogging {
+    def apply(transpiler: Config.Transpiler): Try[Transpiler] = {
+
+      for {
+        encodingType <- transpiler.encodingType.toTry("transpiler.encodingType")
+      } yield Transpiler(
+        encodingType = encodingType,
+      )
+    }
+  }
+  //====================================================================================================================
   /** Options used to configure the server */
   case class Server(
       port: Int)
@@ -787,8 +805,12 @@ object OptionGroup extends LazyLogging {
   trait HasCheckerPreds extends HasChecker {
     val predicates: Predicates
   }
-
-  trait HasTracee extends HasCheckerPreds {
+  //====================================================================================================================
+  trait HasTranspiler extends HasCheckerPreds {
+    val transpiler: Transpiler
+  }
+  //====================================================================================================================
+  trait HasTracee extends HasTranspiler {
     val tracee: Tracee
   }
 
@@ -894,12 +916,13 @@ object OptionGroup extends LazyLogging {
       typechecker: Typechecker,
       checker: Checker,
       predicates: Predicates,
+      transpiler: Transpiler,
       tracee: Tracee)
       extends HasTracee
 
   object WithTracee extends Configurable[Config.ApalacheConfig, WithTracee] {
     def apply(cfg: Config.ApalacheConfig): Try[WithTracee] = for {
-      opts <- WithCheckerPreds(cfg)
+      opts <- WithTranspiler(cfg)
       tracee <- Tracee(cfg.tracee)
     } yield WithTracee(
         opts.common,
@@ -908,6 +931,7 @@ object OptionGroup extends LazyLogging {
         opts.typechecker,
         opts.checker,
         opts.predicates,
+        opts.transpiler,
         tracee,
     )
   }
@@ -934,4 +958,30 @@ object OptionGroup extends LazyLogging {
         predicates,
     )
   }
+  //====================================================================================================================
+  case class WithTranspiler(
+      common: Common,
+      input: Input,
+      output: Output,
+      typechecker: Typechecker,
+      checker: Checker,
+      predicates: Predicates,
+      transpiler: Transpiler)
+      extends HasTranspiler
+
+  object WithTranspiler extends Configurable[Config.ApalacheConfig, WithTranspiler] {
+    def apply(cfg: Config.ApalacheConfig): Try[WithTranspiler] = for {
+      opts <- WithCheckerPreds(cfg)
+      transpiler <- Transpiler(cfg.transpiler)
+    } yield WithTranspiler(
+      opts.common,
+      opts.input,
+      opts.output,
+      opts.typechecker,
+      opts.checker,
+      opts.predicates,
+      transpiler,
+    )
+  }
+  //====================================================================================================================
 }

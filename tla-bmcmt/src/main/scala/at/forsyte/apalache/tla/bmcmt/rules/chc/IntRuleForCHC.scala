@@ -5,7 +5,7 @@ import at.forsyte.apalache.tla.lir.formulas.Integers._
 import at.forsyte.apalache.tla.lir.oper.TlaArithOper
 import at.forsyte.apalache.tla.lir.{OperEx, TlaEx}
 
-class IntRuleForCHCForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRuleForCHC {
+class IntRuleForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRuleForCHC {
   override def isApplicable(ex: TlaEx): Boolean = {
     ex match {
       case OperEx(TlaArithOper.plus | TlaArithOper.minus | TlaArithOper.uminus | TlaArithOper.mult | TlaArithOper.div | TlaArithOper.mod, _*) =>
@@ -46,6 +46,6 @@ class IntRuleForCHCForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRuleFor
           lhsTerm <- rewrite(lhs)
           rhsTerm <- rewrite(rhs)
         } yield Mod(lhsTerm, rhsTerm)
-      case _ => throw new RewriterException(s"IntRuleForCHC not applicable to $ex", ex)
+      case _ => throw new RewriterException(s"IntRule not applicable to $ex", ex)
     }
 }

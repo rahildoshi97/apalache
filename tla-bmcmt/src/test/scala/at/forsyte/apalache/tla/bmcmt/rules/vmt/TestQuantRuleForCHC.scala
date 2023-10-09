@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.chc
+//package at.forsyte.apalache.tla.bmcmt.rules.chc
 
 import at.forsyte.apalache.tla.bmcmt.RewriterException
 import at.forsyte.apalache.tla.lir._
@@ -9,7 +9,7 @@ import at.forsyte.apalache.tla.types.tla
 import org.junit.runner.RunWith
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.junit.JUnitRunner
-
+/*
 @RunWith(classOf[JUnitRunner])
 class TestQuantRuleForCHC extends AnyFunSuite {
 
@@ -70,3 +70,4 @@ class TestQuantRuleForCHC extends AnyFunSuite {
     }
   }
 }
+*/

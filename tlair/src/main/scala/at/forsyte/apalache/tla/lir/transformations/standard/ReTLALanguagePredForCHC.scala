@@ -11,10 +11,8 @@ import scala.collection.immutable.HashSet
  * <p>Test whether the expressions fit into the reTLA fragment: all calls to user operators are inlined, except the
  * calls to nullary let-in definitions.</p>
  *
- * @author
- *   Jure Kukovec
  */
-class ReTLALanguagePred extends ContextualLanguagePred {
+class ReTLALanguagePredForCHC extends ContextualLanguagePred {
   override protected def isOkInContext(letDefs: Set[String], expr: TlaEx): PredResult = {
     expr match {
       case ValEx(TlaBool(_)) | ValEx(TlaInt(_)) | ValEx(TlaStr(_)) =>
@@ -30,17 +28,17 @@ class ReTLALanguagePred extends ContextualLanguagePred {
       case OperEx(TlaActionOper.prime, _: NameEx) =>
         PredResultOk()
 
-      case OperEx(oper, args @ _*) if ReTLALanguagePred.operators.contains(oper) =>
+      case OperEx(oper, args @ _*) if ReTLALanguagePredForCHC.operators.contains(oper) =>
         allArgsOk(letDefs, args)
 
       // Function application and except are the only place we allow tuples, because that's how multivariable functions
       // get expanded
       case OperEx(TlaFunOper.app, fn, arg) =>
         isOkInContext(letDefs, fn).and(
-          arg match {
-            case OperEx(TlaFunOper.tuple, args @ _*) => allArgsOk(letDefs, args)
-            case _                                   => isOkInContext(letDefs, arg)
-          }
+            arg match {
+              case OperEx(TlaFunOper.tuple, args @ _*) => allArgsOk(letDefs, args)
+              case _                                   => isOkInContext(letDefs, arg)
+            }
         )
 
       // SANY quirk #19123:
@@ -53,19 +51,19 @@ class ReTLALanguagePred extends ContextualLanguagePred {
       case OperEx(TlaFunOper.except, fn, key, value) =>
         isOkInContext(letDefs, fn)
           .and(
-            isOkInContext(letDefs, value)
+              isOkInContext(letDefs, value)
           )
           .and(
-            key match {
-              // ![a,b,...] case
-              case OperEx(TlaFunOper.tuple, OperEx(TlaFunOper.tuple, args @ _*)) =>
-                allArgsOk(letDefs, args)
-              // ![a] case
-              case OperEx(TlaFunOper.tuple, arg) =>
-                isOkInContext(letDefs, arg)
-              // Impossible, but we need case-completeness
-              case _ => PredResultFail(List())
-            }
+              key match {
+                // ![a,b,...] case
+                case OperEx(TlaFunOper.tuple, OperEx(TlaFunOper.tuple, args @ _*)) =>
+                  allArgsOk(letDefs, args)
+                // ![a] case
+                case OperEx(TlaFunOper.tuple, arg) =>
+                  isOkInContext(letDefs, arg)
+                // Impossible, but we need case-completeness
+                case _ => PredResultFail(List())
+              }
           )
 
       case LetInEx(body, defs @ _*) =>
@@ -92,37 +90,37 @@ class ReTLALanguagePred extends ContextualLanguagePred {
   }
 }
 
-object ReTLALanguagePred {
-  private val singleton = new ReTLALanguagePred
+object ReTLALanguagePredForCHC {
+  private val singleton = new ReTLALanguagePredForCHC
 
   protected val operators: HashSet[TlaOper] =
     HashSet(
-      ApalacheOper.assign,
-      ApalacheOper.skolem,
-      TlaBoolOper.and,
-      TlaBoolOper.equiv,
-      TlaBoolOper.exists,
-      TlaBoolOper.forall,
-      TlaBoolOper.implies,
-      TlaBoolOper.not,
-      TlaBoolOper.or,
-      TlaControlOper.ifThenElse,
-      TlaFunOper.funDef,
-      TlaOper.eq,
-      TlaOper.ne,
-      // IntArith not in v1
-      //        TlaArithOper.div,
-      //        TlaArithOper.exp,
-      //        TlaArithOper.ge,
-      //        TlaArithOper.gt,
-      //        TlaArithOper.le,
-      //        TlaArithOper.lt,
-      //        TlaArithOper.minus,
-      //        TlaArithOper.mod,
-      //        TlaArithOper.mult,
-      //        TlaArithOper.plus,
-      //        TlaArithOper.uminus,
+        ApalacheOper.assign,
+        ApalacheOper.skolem,
+        TlaBoolOper.and,
+        TlaBoolOper.equiv,
+        TlaBoolOper.exists,
+        TlaBoolOper.forall,
+        TlaBoolOper.implies,
+        TlaBoolOper.not,
+        TlaBoolOper.or,
+        TlaControlOper.ifThenElse,
+        TlaFunOper.funDef,
+        TlaOper.eq,
+        TlaOper.ne,
+        // IntArith
+        TlaArithOper.div,
+        TlaArithOper.exp,
+        TlaArithOper.ge,
+        TlaArithOper.gt,
+        TlaArithOper.le,
+        TlaArithOper.lt,
+        TlaArithOper.minus,
+        TlaArithOper.mod,
+        TlaArithOper.mult,
+        TlaArithOper.plus,
+        TlaArithOper.uminus,
     )
 
-  def apply(): ReTLALanguagePred = singleton
+  def apply(): ReTLALanguagePredForCHC = singleton
 }

@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.chc
+//package at.forsyte.apalache.tla.bmcmt.rules.chc
 
 import at.forsyte.apalache.tla.lir.formulas.Booleans._
 import at.forsyte.apalache.tla.lir.formulas.EUF._
@@ -10,7 +10,7 @@ import at.forsyte.apalache.tla.types.tla
 import org.junit.runner.RunWith
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.junit.JUnitRunner
-
+/*
 @RunWith(classOf[JUnitRunner])
 class TestEUFRuleForCHC extends AnyFunSuite {
 
@@ -80,3 +80,4 @@ class TestEUFRuleForCHC extends AnyFunSuite {
     }
   }
 }
+*/

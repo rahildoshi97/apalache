@@ -14,11 +14,11 @@ class ToTermRewriterImplForCHC(constSets: ConstSetMapTForCHC, gen: UniqueNameGen
   // Less optimized rule lookup than SymbStateRewriter, since we have fewer rules, just search the list
   private val setJudgement = new RestrictedSetJudgementForCHC(constSets)
   private val rules: List[FormulaRuleForCHC] = List(
-    new BoolRuleForCHCForCHC(this),
+    new BoolRuleForCHCF(this),
     new QuantifierRuleForCHC(this, setJudgement),
-    new EUFRuleForCHCForCHC(this, setJudgement, gen),
+    new EUFRuleForCHC(this, setJudgement, gen),
     new ValueRuleForCHC,
-    new IntRuleForCHCForCHC(this),
+    new IntRuleForCHC(this),
   )
 
   override def rewrite(ex: TlaEx): TermBuilderTForCHC =

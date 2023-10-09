@@ -15,7 +15,7 @@ import at.forsyte.apalache.tla.pp.UniqueNameGenerator
  * @author
  *   Jure Kukovec
  */
-class EUFRuleForCHCForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgement: RestrictedSetJudgementForCHC, gen: UniqueNameGenerator)
+class EUFRuleForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgement: RestrictedSetJudgementForCHC, gen: UniqueNameGenerator)
     extends FormulaRuleForCHC {
 
   private val eufOper: Set[TlaOper] = Set(

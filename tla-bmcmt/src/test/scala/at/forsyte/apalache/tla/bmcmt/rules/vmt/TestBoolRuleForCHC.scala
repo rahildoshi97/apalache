@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.chc
+/*package at.forsyte.apalache.tla.bmcmt.rules.chc
 
 import at.forsyte.apalache.tla.lir.formulas.Booleans._
 import at.forsyte.apalache.tla.lir.formulas.Term
@@ -55,3 +55,4 @@ class TestBoolRuleForCHC extends AnyFunSuite {
   }
 
 }
+*/

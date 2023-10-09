@@ -48,7 +48,7 @@ class ReTLAToCHCModule(options: OptionGroup.HasTranspiler) extends ToolModule(op
       .to(classOf[CheckerExceptionAdapter])
 
     bind(classOf[LanguagePred])
-      .to(classOf[ReTLACombinedPredicate])
+      .to(classOf[ReTLACombinedPredicateForCHC])
 
     // stores
     // Create an annotation store with the custom provider.

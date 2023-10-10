@@ -10,7 +10,7 @@ import at.forsyte.apalache.tla.lir.{TlaType1, TlaVarDecl, Typed}
  * TermToCHCWriter manages the translation of Terms to strings, to be written to the final output file.
  *
  * @author
- *   Jure Kukovec
+ *   Rahil Doshi
  */
 object TermToCHCWriter {
 

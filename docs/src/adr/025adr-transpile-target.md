@@ -34,11 +34,18 @@ The envvar `ENCODING_TYPE ?????` can also be used to set the target, see the [mo
 
 The following changes will be made to implement the new CLI option:
 
-- Add new rules for CHC including `IntRuleForCHC` to add support for arithmetic operators.
-- Add `IntRuleForCHC` to class `ToTermRewriterImplForCHC` which is a subclass of `ToTermRewriterForCHC`.
-- Add new string variable `encodingType` to class `TranspileCmd` to enable the new option.
-- Add new value `chcWriter` in `ReTLAToCHCTranspilePassImpl` to convert TLA to CHC.
-- Add new values to `TlaExToCHCWriter` to convert TLA spec to produce CHC output in `output.chc`.
+- Add new string `var` to class `TranspileCmd` to add support for CHC encoding in the CLI using the `--transpile-target` flag.
+- Add `ReTLAPreproPassImplForCHC` preprocessing pass that simplifies TLA+ expressions to CHC by running multiple transformations.
+- Add `ReTLACombinedPredicateForCHC` for combined predicate to be used in `ReTLAToCHCModule`.
+- Add `ReTLALanguagePredForCHC` to include the set of `TlaBoolOper` and `TlaArithOper`.
+- Add new rules for CHC including `BoolRuleForCHC` for `TLABoolOper` such as `and`, `or`, `not`, `implies` and `TlaArithOper` such as `lt`, `le`, `gt`, `ge`. 
+- Add new `IntRuleForCHC` to class `ToTermRewriterImplForCHC` which is a subclass of `ToTermRewriterForCHC`.
+- `IntRuleForCHC` adds support for `TlaArithOper` such as `plus`, `minus`, `mult`, `div` and `ToTermRewriterImplForCHC` is the `ToTermRewriterForCHC` implementation from reTLA to SMT terms.
+- `ToTermRewriterForCHC` defines a translation from TLA+ to SMT Terms.
+- Add new value `chcWriter` in `ReTLAToCHCTranspilePassImpl` to transpile reTLA to CHC.
+- Add new values to `TlaExToCHCWriter` to handle the last step of transpiling: convert the TLA spec to assemble the `.chc` output file.
+- Add `TermToCHCWriter` to manages the translation of terms to strings, to be written to the final `.chc` output file.
+- `ReTLAToCHCModule` binds all the CHC classes together like `ReTLAToVMTModule` for VMT classes.
 - The infrastructure changes made for the `chc` transpilation type mirror the ones made for the `vmt` one.
   See [PR -----] for details.
 

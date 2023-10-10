@@ -5,24 +5,21 @@ import at.forsyte.apalache.tla.lir.TlaEx
 import at.forsyte.apalache.tla.pp.UniqueNameGenerator
 
 /**
- * The ToTermRewriter implementation from reTLA to SMT Terms.
- *
- * @author
- *   Jure Kukovec
+ * The ToTermRewriterForCHC implementation from reTLA to SMT Terms.
  */
 class ToTermRewriterImplForCHC(constSets: ConstSetMapTForCHC, gen: UniqueNameGenerator) extends ToTermRewriterForCHC {
   // Less optimized rule lookup than SymbStateRewriter, since we have fewer rules, just search the list
-  private val setJudgement = new RestrictedSetJudgementForCHC(constSets)
-  private val rules: List[FormulaRuleForCHC] = List(
-    new BoolRuleForCHCF(this),
-    new QuantifierRuleForCHC(this, setJudgement),
-    new EUFRuleForCHC(this, setJudgement, gen),
+  private val setJudgementForCHC = new RestrictedSetJudgementForCHC(constSets)
+  private val rulesForCHC: List[FormulaRuleForCHC] = List(
+    new BoolRuleForCHC(this),
+    new QuantifierRuleForCHC(this, setJudgementForCHC),
+    new EUFRuleForCHC(this, setJudgementForCHC, gen),
     new ValueRuleForCHC,
     new IntRuleForCHC(this),
   )
 
   override def rewrite(ex: TlaEx): TermBuilderTForCHC =
-    rules.find(r => r.isApplicable(ex)) match {
+    rulesForCHC.find(r => r.isApplicable(ex)) match {
       case Some(r) =>
         r(ex)
 

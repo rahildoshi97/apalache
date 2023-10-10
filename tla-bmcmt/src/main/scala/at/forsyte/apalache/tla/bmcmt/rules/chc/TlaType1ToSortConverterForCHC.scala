@@ -18,6 +18,6 @@ object TlaType1ToSortConverterForCHC {
     case ConstT1(name)                => UninterpretedSort(name)
     case FunT1(TupT1(args @ _*), res) => FunctionSort(sortFromType(res), args.map(sortFromType): _*)
     case FunT1(arg, res)              => FunctionSort(sortFromType(res), sortFromType(arg))
-    case _                            => throw new IllegalArgumentException(s"Type $tt not permitted in VMT")
+    case _                            => throw new IllegalArgumentException(s"Type $tt not permitted in CHC")
   }
 }

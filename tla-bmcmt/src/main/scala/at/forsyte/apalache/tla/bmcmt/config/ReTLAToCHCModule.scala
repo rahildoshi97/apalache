@@ -18,9 +18,6 @@ import com.google.inject.TypeLiteral
 
 /**
  * Transpiels reTLA inputs to CHC
- *
- * @author
- *   Jure Kukovec
  */
 class ReTLAToCHCModule(options: OptionGroup.HasTranspiler) extends ToolModule(options) {
   override def configure(): Unit = {
@@ -76,7 +73,7 @@ class ReTLAToCHCModule(options: OptionGroup.HasTranspiler) extends ToolModule(op
     bind(classOf[InlinePass]).to(classOf[InlinePassImpl])
     bind(classOf[PrimingPass]).to(classOf[PrimingPassImpl])
     bind(classOf[VCGenPass]).to(classOf[VCGenPassImpl])
-    bind(classOf[PreproPass]).to(classOf[ReTLAPreproPassImpl])
+    bind(classOf[PreproPass]).to(classOf[ReTLAPreproPassImplForCHC])
     bind(classOf[TransitionPass]).to(classOf[TransitionPassImpl])
     bind(classOf[OptPass]).to(classOf[OptPassImpl])
     bind(classOf[TranspilePass]).to(classOf[ReTLAToCHCTranspilePassImpl])

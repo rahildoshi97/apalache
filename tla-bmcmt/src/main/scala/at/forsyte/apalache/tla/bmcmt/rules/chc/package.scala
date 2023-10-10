@@ -77,8 +77,8 @@ package object chc {
     NameEx(CHCprimeName(unprimedNameEx.name))(unprimedNameEx.typeTag)
 
   /**
-   * VMT uses a named function definition to explicitly annotate which pairs of symbols represent the current- and
-   * next-state value of a system variable. If `x` represents the current-state value, and `x^` the next-state value,
+   * CHC uses a named function definition to explicitly annotate which pairs of symbols represent the current- and
+   * next-state value of a system variable. If `x` represents the current-state value, and `x.prime` the next-state value,
    * then `.x` is the name of the binding function.
    */
   def nextName(name: String): String = s".$name"

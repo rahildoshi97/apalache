@@ -14,9 +14,6 @@ import at.forsyte.apalache.tla.types.ModelValueHandler
  * ValueRule handles the conversion of literals and names
  *
  * Assumption: all names appearing in the IR are unique
- *
- * @author
- *   Jure Kukovec
  */
 class ValueRuleForCHC extends FormulaRuleForCHC {
 

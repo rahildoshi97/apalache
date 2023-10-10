@@ -5,6 +5,12 @@ import at.forsyte.apalache.tla.lir.formulas.Integers._
 import at.forsyte.apalache.tla.lir.oper.TlaArithOper
 import at.forsyte.apalache.tla.lir.{OperEx, TlaEx}
 
+/**
+ * IntRule defines translations for reTLA patterns which use operators from propositional logic.
+ *
+ * @author
+ *   Rahil Doshi
+ */
 class IntRuleForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRuleForCHC {
   override def isApplicable(ex: TlaEx): Boolean = {
     ex match {

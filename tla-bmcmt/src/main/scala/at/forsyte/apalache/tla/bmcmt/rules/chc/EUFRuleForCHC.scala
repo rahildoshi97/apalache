@@ -11,11 +11,8 @@ import at.forsyte.apalache.tla.pp.UniqueNameGenerator
 /**
  * EUFRule defines translations for reTLA patterns which encode equality, introduce values defined by if-then else, or
  * define, apply or update functions.
- *
- * @author
- *   Jure Kukovec
  */
-class EUFRuleForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgement: RestrictedSetJudgementForCHC, gen: UniqueNameGenerator)
+class EUFRuleForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgementForCHC: RestrictedSetJudgementForCHC, gen: UniqueNameGenerator)
     extends FormulaRuleForCHC {
 
   private val eufOper: Set[TlaOper] = Set(
@@ -35,7 +32,7 @@ class EUFRuleForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgement: Rest
     }
 
   // Only restricted sets are allowed as function domains
-  private def isRestrictedSet(ex: TlaEx) = restrictedSetJudgement.isRestrictedSet(ex)
+  private def isRestrictedSet(ex: TlaEx) = restrictedSetJudgementForCHC.isRestrictedSet(ex)
 
   /**
    * When translating g = [f EXCEPT ![x1,...,xn] = a], we need to construct a function representation, which differs
@@ -124,7 +121,7 @@ class EUFRuleForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgement: Rest
           // All domain-defining sets must be restricted.
           if TlaOper.deinterleave(varsAndSets)._2.forall(isRestrictedSet) =>
         val (vars, sets) = TlaOper.deinterleave(varsAndSets)
-        val setSorts = sets.map(restrictedSetJudgement.getSort)
+        val setSorts = sets.map(restrictedSetJudgementForCHC.getSort)
         // Construct pairs of formal parameter names and sorts
         val argList = vars.zip(setSorts).toList.map {
           case (NameEx(name), sort) => (name, sort)

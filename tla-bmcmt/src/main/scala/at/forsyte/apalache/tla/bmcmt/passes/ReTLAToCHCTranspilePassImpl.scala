@@ -12,9 +12,6 @@ import com.typesafe.scalalogging.LazyLogging
 
 /**
  * The reTLA to CHC transpilation pass
- *
- * @author
- *   Jure Kukovec
  */
 class ReTLAToCHCTranspilePassImpl @Inject()(
     pred: LanguagePred,

@@ -13,7 +13,7 @@ import org.scalatestplus.junit.JUnitRunner
 class TestBoolRuleForCHC extends AnyFunSuite {
   val rewriter: ToTermRewriterForCHC = ToTermRewriterImplForCHC()
 
-  val rule: FormulaRuleForCHC = new BoolRuleForCHCForCHC(rewriter)
+  val rule: FormulaRuleForCHC = new BoolRuleForCHC(rewriter)
 
   val b: TlaType1 = BoolT1
 

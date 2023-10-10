@@ -10,9 +10,6 @@ import at.forsyte.apalache.tla.lir.{NameEx, TlaEx, ValEx}
  *
  * Restricted sets are Int, Nat, BOOLEAN and any CONSTANT values typed Set(_). `constNames` is assumed to only contain
  * the names of the CONSTANTs with set types.
- *
- * @author
- *   Jure Kukovec
  */
 class RestrictedSetJudgementForCHC(constSets: Map[String, UninterpretedSort]) {
   def isRestrictedSet(ex: TlaEx): Boolean =

@@ -7,14 +7,14 @@ import at.forsyte.apalache.tla.pp.UniqueNameGenerator
 import scalaz.unused
 
 /**
- * TlaExToCHCWriter handles the last step of transpiling: assembling the .vmt output file.
+ * TlaExToCHCWriter handles the last step of transpiling: assembling the .chc output file.
  *
  * Given a disassembled module (extracted init, next, inv, etc.) VMTWriter determines which parts get which `VMTExpr`
  * wrappers. Then, using TermToCHCWriter, it translates the VMT terms to output strings, and adds sort/function
  * declarations and definitions.
  *
  * @author
- *   Jure Kukovec
+ *   Rahil Doshi
  */
 class TlaExToCHCWriter(gen: UniqueNameGenerator) {
   // Main entry point.

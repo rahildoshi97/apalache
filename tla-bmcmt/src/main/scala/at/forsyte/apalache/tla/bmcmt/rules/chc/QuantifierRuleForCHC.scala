@@ -10,9 +10,6 @@ import at.forsyte.apalache.tla.lir.{NameEx, OperEx, TlaEx}
  * QuantifierRule defines translations for quantified expressions in reTLA.
  *
  * `restrictedSetJudgement` determines which sets (by name) are considered restricted (and what their sorts are).
- *
- * @author
- *   Jure Kukovec
  */
 class QuantifierRuleForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgement: RestrictedSetJudgementForCHC) extends FormulaRuleForCHC {
   override def isApplicable(ex: TlaEx): Boolean = ex match {

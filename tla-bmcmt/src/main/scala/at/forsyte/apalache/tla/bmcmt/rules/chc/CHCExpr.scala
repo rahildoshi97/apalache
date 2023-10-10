@@ -5,9 +5,6 @@ import at.forsyte.apalache.tla.lir.formulas.{BoolSort, Term, Variable}
 /**
  * VMTExpr objects are wrappers around SMT Terms. They exist to let the writer to the output file know which labels to
  * add to which SMT expression.
- *
- * @author
- *   Jure Kukovec
  */
 abstract class CHCExpr
 

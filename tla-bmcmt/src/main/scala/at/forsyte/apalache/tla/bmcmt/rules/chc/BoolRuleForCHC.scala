@@ -8,11 +8,8 @@ import at.forsyte.apalache.tla.lir.{OperEx, TlaEx}
 
 /**
  * BoolRule defines translations for reTLA patterns which use operators from propositional logic.
- *
- * @author
- *   Jure Kukovec
  */
-class BoolRuleForCHCF(rewriter: ToTermRewriterForCHC) extends FormulaRuleForCHC {
+class BoolRuleForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRuleForCHC {
   override def isApplicable(ex: TlaEx): Boolean =
     ex match {
       case OperEx(TlaBoolOper.and | TlaBoolOper.or | TlaBoolOper.not | TlaBoolOper.implies | TlaBoolOper.equiv | TlaArithOper.lt | TlaArithOper.le | TlaArithOper.gt | TlaArithOper.ge, _*) =>

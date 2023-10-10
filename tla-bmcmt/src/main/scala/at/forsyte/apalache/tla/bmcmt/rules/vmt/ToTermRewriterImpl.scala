@@ -1,4 +1,5 @@
 package at.forsyte.apalache.tla.bmcmt.rules.vmt
+
 import at.forsyte.apalache.tla.bmcmt.RewriterException
 import at.forsyte.apalache.tla.lir.TlaEx
 import at.forsyte.apalache.tla.pp.UniqueNameGenerator

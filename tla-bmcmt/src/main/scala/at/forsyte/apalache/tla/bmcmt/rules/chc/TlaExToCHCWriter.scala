@@ -63,7 +63,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       rewrite(ex).map { Invar(name, i, _) }
     })
 
-    val (smtDeclsForCHC@_, (inits, transitions, invs@_)) = (for {
+    val (smtDeclsForCHC@_, (inits, transitions, invs)) = (for {
       initTerms <- initCmps
       transitionTerms <- transitionCmps
       invTerms <- invCmps
@@ -215,14 +215,11 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       writer.println(";Invariant")
       writer.print(s"(assert\n\t(forall (")
       smtVarDecls.foreach(writer.print)
-      smtVarDeclsPrime.foreach(writer.print)
       writer.print(s")\n\t\t(=>\n\t\t\t(and (pred ")
       smtVar.foreach(writer.print)
-      writer.print(s")\n\t\t\t~")
-      transStrs.foreach(writer.print)
-      writer.print(s" ~")
+      writer.print(s")\n\t\t\t(not (and ")
       invStrs.foreach(writer.print)
-      writer.print(s")\n\t\t\tfalse\n\t\t)\n\t)\n)\n")
+      writer.print(s")))\n\t\t\tfalse\n\t\t)\n\t)\n)\n")
       writer.println()
       writer.println(s"(check-sat)")
       writer.println(s"(exit)")

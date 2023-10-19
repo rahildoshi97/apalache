@@ -1,1 +1,1 @@
- check --inv=Inv --length=1 LocalFold.tla
+ check --temporal=Liveness LongPrefix.tla

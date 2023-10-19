@@ -73,9 +73,9 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
 
     val transStrs = transitions.map(TermToCHCWriter.mkVMTString)
 
-    /*val invStrs = invs.map(TermToCHCWriter.mkVMTString)
+    val invStrs = invs.map(TermToCHCWriter.mkVMTString)
 
-    // Each variable v in varDecls needs the VMT binding Next(v, v')
+    /*// Each variable v in varDecls needs the VMT binding Next(v, v')
     val nextBindings = varDecls.map { case d @ TlaVarDecl(name) =>
       val sort = TlaType1ToSortConverterForCHC.sortFromType(d.typeTag.asTlaType1())
       Next(nextName(name), mkVariable(name, sort), mkVariable(CHCprimeName(name), sort))
@@ -151,7 +151,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
         smtVarDeclsPrime.foreach(writer.print)
         writer.print(s")\n\t\t(=>\n\t\t\t(and (pred ")
         smtVar.foreach(writer.print)
-        writer.print(s")") // )\n\t\t\t
+        writer.print(s")\n\t\t\t")
         //transStrs.foreach(writer.print)
         writer.print(s"$transStrs")
         writer.print(s")\n\t\t\t(pred ")
@@ -184,12 +184,8 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
         smtVarPrime.foreach(writer.print)
         writer.print(s")\n\t\t)\n\t)\n)\n")
       }
-      */
-      writer.println(s"(check-sat)")
-      //writer.println(s"(get-model)")
-      writer.println(s"(exit)")
 
-      /*writer.println(s"transStr size")
+      writer.println(s"transStr size")
       writer.println(transStrs.size)
       writer.println(s"nextTransitions size")
       writer.println(nextTransitions.size)*/
@@ -215,10 +211,21 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       initStrs.foreach(writer.println)
       writer.println()
       writer.println(";Transitions")
-      transStrs.foreach(writer.println)
+      transStrs.foreach(writer.println)*/
+      writer.println(";Invariant")
+      writer.print(s"(assert\n\t(forall (")
+      smtVarDecls.foreach(writer.print)
+      smtVarDeclsPrime.foreach(writer.print)
+      writer.print(s")\n\t\t(=>\n\t\t\t(and (pred ")
+      smtVar.foreach(writer.print)
+      writer.print(s")\n\t\t\t~")
+      transStrs.foreach(writer.print)
+      writer.print(s" ~")
+      invStrs.foreach(writer.print)
+      writer.print(s")\n\t\t\tfalse\n\t\t)\n\t)\n)\n")
       writer.println()
-      writer.println(";Invariants")
-      invStrs.foreach(writer.println)*/
+      writer.println(s"(check-sat)")
+      writer.println(s"(exit)")
     }
   }
 

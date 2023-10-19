@@ -458,6 +458,52 @@ Found a violation of the postcondition. Check violation.tla.
 ...
 EXITCODE: ERROR (12)
 ```
+## running the transpile command
+
+### transpile ArithOper succeeds
+
+```sh
+$ apalache-mc transpile --transpile-target=vmt NoArithOper.tla | sed 's/I@.*//'
+...
+EXITCODE: OK
+...
+```
+
+### transpile ArithOper succeeds
+
+```sh
+$ apalache-mc transpile --transpile-target=chc NoArithOper.tla | sed 's/I@.*//'
+...
+EXITCODE: OK
+...
+```
+
+### transpile ArithOper succeeds
+
+```sh
+$ apalache-mc transpile --transpile-target=chc ArithOper.tla | sed 's/I@.*//'
+...
+EXITCODE: OK
+...
+```
+
+### transpile ArithOper fails
+
+```sh
+$ apalache-mc transpile ArithOper.tla | sed 's/I@.*//'
+...
+EXITCODE: ERROR (75)
+...
+```
+
+### transpile ArithOper fails
+
+```sh
+$ apalache-mc transpile --transpile-target=vmt ArithOper.tla | sed 's/I@.*//'
+...
+EXITCODE: ERROR (75)
+...
+```
 
 ## running the check command
 

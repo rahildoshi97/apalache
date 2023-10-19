@@ -189,8 +189,9 @@ object TermToCHCWriter {
           else s"($currentStr ${dummyNamesAndSorts.map(_._1).mkString(" ")})"
 
         s"(define-fun $name (${fromParis.mkString(" ")}) ${to} (! $currentApp :next ${tr(next)}))"
-      case Init(name@_, init)      => s"${tr(init)}"
-      case Invar(name, idx, inv) => s"(define-fun $name () Bool (! ${tr(inv)} :invar-property $idx))"
-      case Trans(name@_, trEx) => s"\n\t\t\t${tr(trEx)}"
+      case Init(name@_, init)    => s"${tr(init)}"
+      //case Invar(name, idx, inv) => s"(define-fun $name () Bool (! ${tr(inv)} :invar-property $idx))"
+      case Invar(name@_, idx@_, inv) => s"${tr(inv)}"
+      case Trans(name@_, trEx)   => s"${tr(trEx)}"
     }
 }

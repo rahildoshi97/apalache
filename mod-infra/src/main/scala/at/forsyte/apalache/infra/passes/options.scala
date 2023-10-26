@@ -952,7 +952,7 @@ object OptionGroup extends LazyLogging {
         predicates,
     )
   }
-  //====================================================================================================================
+
   case class WithTranspiler(
       common: Common,
       input: Input,
@@ -977,5 +977,5 @@ object OptionGroup extends LazyLogging {
       transpiler,
     )
   }
-  //====================================================================================================================
+
 }

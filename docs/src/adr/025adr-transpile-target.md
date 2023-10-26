@@ -24,7 +24,7 @@ This is an extension of an already available transpilation target in Apalache ca
 CHC is to be an alternate transpilation target to the already available VMT option in Apalache.
 Given this, a new option is to be added to the `transpile` command of the CLI. The default transpilaton target will be
 the existing one (VMT). The option description is shown below. 
-The envvar `ENCODING_TYPE ?????` can also be used to set the target, see the [model checking parameters] for details. 
+Added flag for `--transpile-target` but there is no envvar equivalent yet.
 
 ```
 --transpile-target : the transpile targets: vmt, chc (experimental), default: vmt
@@ -50,6 +50,15 @@ The following changes will be made to implement the new CLI option:
   See [PR -----] for details.
 
 ## Testing
+
+### Unit test
+
+- Add file `TestReTLALanguagePredForCHC` to add support for integer expressions for CHC based on `TestReTLALanguagePred` for VMT.
+
+### Integration test
+
+- Add `NoArithOper.tla` to test for `--transpile-target=vmt` flag.
+- Add `ArithOper.tla` to test for `--transpile-target=chc` flag to check support for arithmetic operations.
 
 ## Summary
 

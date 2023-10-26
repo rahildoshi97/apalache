@@ -201,7 +201,7 @@ object Config {
     def invOrDefault = inv.getOrElse(List.empty)
     def temporalPropsOrDefault = temporalProps.getOrElse(List.empty)
   }
-  //====================================================================================================================
+
   /**
    * Configuration of transpile evaluation
    *
@@ -215,7 +215,7 @@ object Config {
 
     def empty: Transpiler = Generic[Transpiler].from(Generic[Transpiler].to(this).map(emptyPoly))
   }
-  //====================================================================================================================
+
   /**
    * Configuration of trace evaluation
    *
@@ -388,7 +388,7 @@ object SMTEncoding {
     case oddEncodingType => throw new IllegalArgumentException(s"Unexpected SMT encoding type $oddEncodingType")
   }
 }
-//======================================================================================================================
+
 /** Defines the transpile target options supported */
 sealed abstract class EncodingType
 
@@ -406,7 +406,7 @@ object EncodingType {
     case oddEncodingType => throw new IllegalArgumentException(s"Unexpected transpile target $oddEncodingType")
   }
 }
-//======================================================================================================================
+
 /** Defines the bmcmt model options supported */
 sealed abstract class Algorithm
 
@@ -728,7 +728,7 @@ object OptionGroup extends LazyLogging {
       )
     }
   }
-  //====================================================================================================================
+
   /** Options used to configure transpile */
   case class Transpiler(
       encodingType: EncodingType)
@@ -744,7 +744,7 @@ object OptionGroup extends LazyLogging {
       )
     }
   }
-  //====================================================================================================================
+
   /** Options used to configure the server */
   case class Server(
       port: Int)
@@ -799,11 +799,11 @@ object OptionGroup extends LazyLogging {
   trait HasCheckerPreds extends HasChecker {
     val predicates: Predicates
   }
-  //====================================================================================================================
+
   trait HasTranspiler extends HasCheckerPreds {
     val transpiler: Transpiler
   }
-  //====================================================================================================================
+
   trait HasTracee extends HasTranspiler {
     val tracee: Tracee
   }

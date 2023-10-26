@@ -119,13 +119,10 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       // smtVar.foreach(writer.println) // var1var2
       // smtVarPrime.foreach(writer.println) //val1.prime val2.prime
       writer.println("(set-logic HORN)")
-      writer.println()
+      //writer.println()
       writer.print(s"(declare-fun pred (")
       smtVarType.foreach(writer.print)
-      writer.print(s") Bool)")
-
-      writer.println()
-      writer.println()
+      writer.println(s") Bool)")
 
       writer.println(";Init")
       writer.print(s"(assert\n\t(forall (")
@@ -134,10 +131,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       initStrs.foreach(writer.print)
       writer.print(s"\n\t\t\t(pred ")
       smtVar.foreach(writer.print)
-      writer.print(s")\n\t\t)\n\t)\n)")
-
-      writer.println()
-      writer.println()
+      writer.println(s")\n\t\t)\n\t)\n)")
       /*
       for ((transStrs, index) <- transStrs.zipWithIndex) { // testing
         //writer.print(s"Element at index $index: $transStrs")
@@ -156,12 +150,9 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
         writer.print(s"$transStrs")
         writer.print(s")\n\t\t\t(pred ")
         smtVarPrime.foreach(writer.print)
-        writer.print(s")\n\t\t)\n\t)\n)\n")
+        writer.println(s")\n\t\t)\n\t)\n)")
       }
-
-      writer.println()
-      /*
-      for (index <- 0 until transStrs.size) { // testing
+      /*for (index <- 0 until transStrs.size) { // testing
         val element = transStrs(index)
         //writer.print(s"Element at index $index: $element")
         writer.print(s"$element")
@@ -213,14 +204,15 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       writer.println(";Transitions")
       transStrs.foreach(writer.println)*/
       writer.println(";Invariant")
-      writer.print(s"(assert\n\t(forall (")
-      smtVarDecls.foreach(writer.print)
-      writer.print(s")\n\t\t(=>\n\t\t\t(and (pred ")
-      smtVar.foreach(writer.print)
-      writer.print(s")\n\t\t\t(not (and ")
-      invStrs.foreach(writer.print)
-      writer.print(s")))\n\t\t\tfalse\n\t\t)\n\t)\n)\n")
-      writer.println()
+      if (invStrs.nonEmpty) {
+        writer.print(s"(assert\n\t(forall (")
+        smtVarDecls.foreach(writer.print)
+        writer.print(s")\n\t\t(=>\n\t\t\t(and (pred ")
+        smtVar.foreach(writer.print)
+        writer.print(s")\n\t\t\t(not (and ")
+        invStrs.foreach(writer.print)
+        writer.println(s")))\n\t\t\tfalse\n\t\t)\n\t)\n)")
+      }
       writer.println(s"(check-sat)")
       writer.println(s"(exit)")
     }

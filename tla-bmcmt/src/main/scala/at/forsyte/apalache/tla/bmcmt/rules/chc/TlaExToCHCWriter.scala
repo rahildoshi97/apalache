@@ -63,7 +63,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       rewrite(ex).map { Invar(name, i, _) }
     })
 
-    val (smtDeclsForCHC@_, (inits, transitions, invs)) = (for {
+    val (smtDeclsForCHC @ _, (inits, transitions, invs)) = (for {
       initTerms <- initCmps
       transitionTerms <- transitionCmps
       invTerms <- invCmps
@@ -112,14 +112,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
     val smtVarPrime = varDecls.map(TermToCHCWriter.mkSMTVarPrime) // added
 
     OutputManager.withWriterInRunDir(TlaExToCHCWriter.outFileName) { writer =>
-
-      // smtVarDecls.foreach(writer.println) // (val1 Bool) (val2 Int)
-      // smtVarDeclsPrime.foreach(writer.println) // (val1.prime Bool) (val2.prime Int)
-      // smtVarType.foreach(writer.println) // BoolInt
-      // smtVar.foreach(writer.println) // var1var2
-      // smtVarPrime.foreach(writer.println) //val1.prime val2.prime
       writer.println("(set-logic HORN)")
-      //writer.println()
       writer.print(s"(declare-fun pred (")
       smtVarType.foreach(writer.print)
       writer.println(s") Bool)")
@@ -137,8 +130,8 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
         //writer.print(s"Element at index $index: $transStrs")
         writer.print(s"$transStrs")
       }
-      */
-      for ((transStrs, index) <- transStrs.zipWithIndex) {
+       */
+      for ((transStrs, index @ _) <- transStrs.zipWithIndex) {
         writer.println(";Next")
         writer.print(s"(assert\n\t(forall (")
         smtVarDecls.foreach(writer.print)
@@ -146,7 +139,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
         writer.print(s")\n\t\t(=>\n\t\t\t(and (pred ")
         smtVar.foreach(writer.print)
         writer.print(s")\n\t\t\t")
-        //transStrs.foreach(writer.print)
+        // transStrs.foreach(writer.print)
         writer.print(s"$transStrs")
         writer.print(s")\n\t\t\t(pred ")
         smtVarPrime.foreach(writer.print)
@@ -180,29 +173,6 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       writer.println(transStrs.size)
       writer.println(s"nextTransitions size")
       writer.println(nextTransitions.size)*/
-
-      /*writer.println(";Sorts")
-      sortDecls.foreach(writer.println)
-      writer.println()
-      writer.println(";Constants")
-      ulitDecls.foreach(writer.println)
-      writer.println()
-      disticntAsserts.foreach(writer.println)
-      writer.println()
-      writer.println(";Variables")
-      smtVarDecls.foreach(writer.println)
-      writer.println()
-      writer.println(";Variable bindings")
-      nextStrs.foreach(writer.println)
-      writer.println()
-//      writer.println(";TLA constant initialization")
-//      cinitStrs.foreach(writer.println)
-//      writer.println()
-      writer.println(";Initial states")
-      initStrs.foreach(writer.println)
-      writer.println()
-      writer.println(";Transitions")
-      transStrs.foreach(writer.println)*/
       writer.println(";Invariant")
       if (invStrs.nonEmpty) {
         writer.print(s"(assert\n\t(forall (")

@@ -12,7 +12,8 @@ import at.forsyte.apalache.tla.lir.{OperEx, TlaEx}
 class BoolRuleForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRuleForCHC {
   override def isApplicable(ex: TlaEx): Boolean =
     ex match {
-      case OperEx(TlaBoolOper.and | TlaBoolOper.or | TlaBoolOper.not | TlaBoolOper.implies | TlaBoolOper.equiv | TlaArithOper.lt | TlaArithOper.le | TlaArithOper.gt | TlaArithOper.ge, _*) =>
+      case OperEx(TlaBoolOper.and | TlaBoolOper.or | TlaBoolOper.not | TlaBoolOper.implies | TlaBoolOper.equiv |
+              TlaArithOper.lt | TlaArithOper.le | TlaArithOper.gt | TlaArithOper.ge, _*) =>
         true
       case _ => false
     }

@@ -11,7 +11,8 @@ import at.forsyte.apalache.tla.lir.{NameEx, OperEx, TlaEx}
  *
  * `restrictedSetJudgement` determines which sets (by name) are considered restricted (and what their sorts are).
  */
-class QuantifierRuleForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgement: RestrictedSetJudgementForCHC) extends FormulaRuleForCHC {
+class QuantifierRuleForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgement: RestrictedSetJudgementForCHC)
+    extends FormulaRuleForCHC {
   override def isApplicable(ex: TlaEx): Boolean = ex match {
     case OperEx(TlaBoolOper.exists | TlaBoolOper.forall, _, set, _) if isRestrictedSet(set) => true
     case _                                                                                  => false
@@ -23,7 +24,11 @@ class QuantifierRuleForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgemen
   private def rewrite: TlaEx => TermBuilderTForCHC = rewriter.rewrite
 
   // Both \E and \A translate the same, up to the constructor name
-  private def mk(Ctor: (Seq[(String, Sort)], Term) => Term)(name: String, set: TlaEx, pred: TlaEx): TermBuilderTForCHC = {
+  private def mk(
+      Ctor: (Seq[(String, Sort)], Term) => Term
+    )(name: String,
+      set: TlaEx,
+      pred: TlaEx): TermBuilderTForCHC = {
     val setSort = restrictedSetJudgement.getSort(set)
     for {
       _ <- storeUninterpretedSort(setSort)

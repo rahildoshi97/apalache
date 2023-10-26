@@ -37,10 +37,10 @@ class ReTLALanguagePred extends ContextualLanguagePred {
       // get expanded
       case OperEx(TlaFunOper.app, fn, arg) =>
         isOkInContext(letDefs, fn).and(
-          arg match {
-            case OperEx(TlaFunOper.tuple, args @ _*) => allArgsOk(letDefs, args)
-            case _                                   => isOkInContext(letDefs, arg)
-          }
+            arg match {
+              case OperEx(TlaFunOper.tuple, args @ _*) => allArgsOk(letDefs, args)
+              case _                                   => isOkInContext(letDefs, arg)
+            }
         )
 
       // SANY quirk #19123:
@@ -53,19 +53,19 @@ class ReTLALanguagePred extends ContextualLanguagePred {
       case OperEx(TlaFunOper.except, fn, key, value) =>
         isOkInContext(letDefs, fn)
           .and(
-            isOkInContext(letDefs, value)
+              isOkInContext(letDefs, value)
           )
           .and(
-            key match {
-              // ![a,b,...] case
-              case OperEx(TlaFunOper.tuple, OperEx(TlaFunOper.tuple, args @ _*)) =>
-                allArgsOk(letDefs, args)
-              // ![a] case
-              case OperEx(TlaFunOper.tuple, arg) =>
-                isOkInContext(letDefs, arg)
-              // Impossible, but we need case-completeness
-              case _ => PredResultFail(List())
-            }
+              key match {
+                // ![a,b,...] case
+                case OperEx(TlaFunOper.tuple, OperEx(TlaFunOper.tuple, args @ _*)) =>
+                  allArgsOk(letDefs, args)
+                // ![a] case
+                case OperEx(TlaFunOper.tuple, arg) =>
+                  isOkInContext(letDefs, arg)
+                // Impossible, but we need case-completeness
+                case _ => PredResultFail(List())
+              }
           )
 
       case LetInEx(body, defs @ _*) =>
@@ -97,31 +97,31 @@ object ReTLALanguagePred {
 
   protected val operators: HashSet[TlaOper] =
     HashSet(
-      ApalacheOper.assign,
-      ApalacheOper.skolem,
-      TlaBoolOper.and,
-      TlaBoolOper.equiv,
-      TlaBoolOper.exists,
-      TlaBoolOper.forall,
-      TlaBoolOper.implies,
-      TlaBoolOper.not,
-      TlaBoolOper.or,
-      TlaControlOper.ifThenElse,
-      TlaFunOper.funDef,
-      TlaOper.eq,
-      TlaOper.ne,
-      // IntArith not in v1
-      //        TlaArithOper.div,
-      //        TlaArithOper.exp,
-      //        TlaArithOper.ge,
-      //        TlaArithOper.gt,
-      //        TlaArithOper.le,
-      //        TlaArithOper.lt,
-      //        TlaArithOper.minus,
-      //        TlaArithOper.mod,
-      //        TlaArithOper.mult,
-      //        TlaArithOper.plus,
-      //        TlaArithOper.uminus,
+        ApalacheOper.assign,
+        ApalacheOper.skolem,
+        TlaBoolOper.and,
+        TlaBoolOper.equiv,
+        TlaBoolOper.exists,
+        TlaBoolOper.forall,
+        TlaBoolOper.implies,
+        TlaBoolOper.not,
+        TlaBoolOper.or,
+        TlaControlOper.ifThenElse,
+        TlaFunOper.funDef,
+        TlaOper.eq,
+        TlaOper.ne,
+        // IntArith not in v1
+        //        TlaArithOper.div,
+        //        TlaArithOper.exp,
+        //        TlaArithOper.ge,
+        //        TlaArithOper.gt,
+        //        TlaArithOper.le,
+        //        TlaArithOper.lt,
+        //        TlaArithOper.minus,
+        //        TlaArithOper.mod,
+        //        TlaArithOper.mult,
+        //        TlaArithOper.plus,
+        //        TlaArithOper.uminus,
     )
 
   def apply(): ReTLALanguagePred = singleton

@@ -13,7 +13,7 @@ import com.typesafe.scalalogging.LazyLogging
 /**
  * The reTLA to CHC transpilation pass
  */
-class ReTLAToCHCTranspilePassImpl @Inject()(
+class ReTLAToCHCTranspilePassImpl @Inject() (
     pred: LanguagePred,
     gen: UniqueNameGenerator,
     tracker: TransformationTracker)

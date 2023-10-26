@@ -29,8 +29,8 @@ package object chc {
 
   /** Turns a sequence of States into a single State wrapping list of values */
   def cmpSeq[A, S](args: Iterable[State[S, A]]): State[S, List[A]] =
-  // Scalaz defines .sequence only over Lists, not Seqs, but we get args (from variadic constructors)
-  // as Seq, so there's a bit of back-and-forth conversion happening here.
+    // Scalaz defines .sequence only over Lists, not Seqs, but we get args (from variadic constructors)
+    // as Seq, so there's a bit of back-and-forth conversion happening here.
     args.toList.sequence
 
   /** Adds a function definition to the internal state collection, and returns that function's Term representation. */
@@ -78,8 +78,8 @@ package object chc {
 
   /**
    * CHC uses a named function definition to explicitly annotate which pairs of symbols represent the current- and
-   * next-state value of a system variable. If `x` represents the current-state value, and `x.prime` the next-state value,
-   * then `.x` is the name of the binding function.
+   * next-state value of a system variable. If `x` represents the current-state value, and `x.prime` the next-state
+   * value, then `.x` is the name of the binding function.
    */
   def nextName(name: String): String = s".$name"
 

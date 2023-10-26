@@ -10,7 +10,6 @@ import scala.collection.immutable.HashSet
 /**
  * <p>Test whether the expressions fit into the reTLA fragment: all calls to user operators are inlined, except the
  * calls to nullary let-in definitions.</p>
- *
  */
 class ReTLALanguagePredForCHC extends ContextualLanguagePred {
   override protected def isOkInContext(letDefs: Set[String], expr: TlaEx): PredResult = {

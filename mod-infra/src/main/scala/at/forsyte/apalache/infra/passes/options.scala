@@ -206,7 +206,7 @@ object Config {
    * Configuration of transpile evaluation
    *
    * @param encodingType
-   * the encoding type to use
+   *   the encoding type to use
    */
   case class Transpiler(
       encodingType: Option[EncodingType] = Some(EncodingType.VMT),
@@ -400,7 +400,7 @@ object EncodingType {
     override def toString: String = "chc"
   }
 
-  val ofString: String   => EncodingType = {
+  val ofString: String => EncodingType = {
     case "chc"           => CHC
     case "vmt"           => VMT
     case oddEncodingType => throw new IllegalArgumentException(s"Unexpected transpile target $oddEncodingType")
@@ -732,7 +732,7 @@ object OptionGroup extends LazyLogging {
   /** Options used to configure transpile */
   case class Transpiler(
       encodingType: EncodingType)
-    extends OptionGroup
+      extends OptionGroup
 
   object Transpiler extends Configurable[Config.Transpiler, Transpiler] with LazyLogging {
     def apply(transpiler: Config.Transpiler): Try[Transpiler] = {
@@ -740,7 +740,7 @@ object OptionGroup extends LazyLogging {
       for {
         encodingType <- transpiler.encodingType.toTry("transpiler.encodingType")
       } yield Transpiler(
-        encodingType = encodingType,
+          encodingType = encodingType
       )
     }
   }
@@ -968,13 +968,13 @@ object OptionGroup extends LazyLogging {
       opts <- WithCheckerPreds(cfg)
       transpiler <- Transpiler(cfg.transpiler)
     } yield WithTranspiler(
-      opts.common,
-      opts.input,
-      opts.output,
-      opts.typechecker,
-      opts.checker,
-      opts.predicates,
-      transpiler,
+        opts.common,
+        opts.input,
+        opts.output,
+        opts.typechecker,
+        opts.checker,
+        opts.predicates,
+        transpiler,
     )
   }
 

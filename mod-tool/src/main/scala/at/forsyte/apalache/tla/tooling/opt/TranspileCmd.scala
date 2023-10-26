@@ -14,21 +14,22 @@ class TranspileCmd extends AbstractCheckerCmd(name = "transpile", description = 
   implicit val encodingTypeRead: Read[EncodingType] =
     Read.reads[EncodingType]("the transpile target, either vmt or chc")(EncodingType.ofString)
 
-  var encodingType: Option[EncodingType] = opt[Option[EncodingType]](name = "transpile-target", useEnv = true, default = None,
-    description =
-      s"the transpile targets: ${EncodingType.VMT}, ${EncodingType.CHC} (experimental), default: ${EncodingType.VMT}")
+  var encodingType: Option[EncodingType] = opt[Option[EncodingType]](name = "transpile-target", useEnv = true,
+      default = None,
+      description =
+        s"the transpile targets: ${EncodingType.VMT}, ${EncodingType.CHC} (experimental), default: ${EncodingType.VMT}")
 
   override def toConfig() =
     super.toConfig().map { cfg =>
-    cfg.copy(
-      transpiler = cfg.transpiler.copy(
-        encodingType = encodingType
-      ),
-      typechecker = cfg.typechecker.copy(
-        inferpoly = Some(true)
-      ),
-    )
-  }
+      cfg.copy(
+          transpiler = cfg.transpiler.copy(
+              encodingType = encodingType
+          ),
+          typechecker = cfg.typechecker.copy(
+              inferpoly = Some(true)
+          ),
+      )
+    }
 
   def run() = {
     val cfg = configuration.get
@@ -45,7 +46,7 @@ class TranspileCmd extends AbstractCheckerCmd(name = "transpile", description = 
           .getOrElse(TlaExToVMTWriter.outFileName)
 
         PassChainExecutor.run(new ReTLAToVMTModule(options)) match {
-          case Right(_) => Right(s"VMT constraints successfully generated at\n$outFilePath")
+          case Right(_)      => Right(s"VMT constraints successfully generated at\n$outFilePath")
           case Left(failure) => Left(failure.exitCode, "Failed to generate VMT constraints")
         }
       case EncodingType.CHC =>
@@ -56,7 +57,7 @@ class TranspileCmd extends AbstractCheckerCmd(name = "transpile", description = 
           .getOrElse(TlaExToCHCWriter.outFileName)
 
         PassChainExecutor.run(new ReTLAToCHCModule(options)) match {
-          case Right(_) => Right(s"CHC constraints successfully generated at\n$outFilePath")
+          case Right(_)      => Right(s"CHC constraints successfully generated at\n$outFilePath")
           case Left(failure) => Left(failure.exitCode, "Failed to generate CHC constraints")
         }
       case oddEncoding => throw new IllegalArgumentException(s"Unexpected transpiler.transpile-target=$oddEncoding")

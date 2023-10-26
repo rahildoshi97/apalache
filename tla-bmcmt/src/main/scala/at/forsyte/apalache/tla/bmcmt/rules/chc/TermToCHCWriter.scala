@@ -73,17 +73,17 @@ object TermToCHCWriter {
       case Apply(fn, args @ _*)          => s"(${tr(fn)} ${args.map(tr).mkString(" ")})"
       case ITE(cond, thenTerm, elseTerm) => s"(ite ${tr(cond)} ${tr(thenTerm)} ${tr(elseTerm)})"
 
-      case Lt(a, b)                      => s"(< ${tr(a)} ${tr(b)})"
-      case Le(a, b)                      => s"(<= ${tr(a)} ${tr(b)})"
-      case Gt(a, b)                      => s"(> ${tr(a)} ${tr(b)})"
-      case Ge(a, b)                      => s"(>= ${tr(a)} ${tr(b)})"
-      case Plus(a, b)                    => s"(+ ${tr(a)} ${tr(b)})"
-      case Minus(a, b)                   => s"(- ${tr(a)} ${tr(b)})"
-      case Uminus(x)                     => s"(- ${tr(x)})"
-      case Mult(a, b)                    => s"(* ${tr(a)} ${tr(b)})"
-      case Div(a, b)                     => s"(/ ${tr(a)} ${tr(b)})"
-      case Mod(a, b)                     => s"(mod ${tr(a)} ${tr(b)})"
-      case x                             => throw new NotImplementedError(s"${x.getClass.getName} is not supported.")
+      case Lt(a, b)    => s"(< ${tr(a)} ${tr(b)})"
+      case Le(a, b)    => s"(<= ${tr(a)} ${tr(b)})"
+      case Gt(a, b)    => s"(> ${tr(a)} ${tr(b)})"
+      case Ge(a, b)    => s"(>= ${tr(a)} ${tr(b)})"
+      case Plus(a, b)  => s"(+ ${tr(a)} ${tr(b)})"
+      case Minus(a, b) => s"(- ${tr(a)} ${tr(b)})"
+      case Uminus(x)   => s"(- ${tr(x)})"
+      case Mult(a, b)  => s"(* ${tr(a)} ${tr(b)})"
+      case Div(a, b)   => s"(/ ${tr(a)} ${tr(b)})"
+      case Mod(a, b)   => s"(mod ${tr(a)} ${tr(b)})"
+      case x           => throw new NotImplementedError(s"${x.getClass.getName} is not supported.")
 
     }
 
@@ -91,7 +91,7 @@ object TermToCHCWriter {
   def mkSMTDecl(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms@_, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
+        val (froms @ _, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
         def mkDecl(name: String) = s"($name $to) "
         s"${mkDecl(d.name)}"
 
@@ -102,7 +102,7 @@ object TermToCHCWriter {
   def mkSMTDeclPrime(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms@_, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
+        val (froms @ _, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
         def mkDecl(name: String) = s"($name $to) "
         s"${mkDecl(CHCprimeName(d.name))}"
 
@@ -113,7 +113,7 @@ object TermToCHCWriter {
   def mkSMTVarType(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms@_, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
+        val (froms @ _, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
         def mkDecl(name: String) = s"$to "
         s"${mkDecl(d.name)}"
 
@@ -124,7 +124,7 @@ object TermToCHCWriter {
   def mkSMTVar(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms@_, to@_) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
+        val (froms @ _, to @ _) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
         def mkDecl(name: String) = s"$name "
         s"${mkDecl(d.name)}"
 
@@ -135,7 +135,7 @@ object TermToCHCWriter {
   def mkSMTVarPrime(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms@_, to@_) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
+        val (froms @ _, to @ _) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
 
         def mkDecl(name: String) = s"$name "
 
@@ -189,9 +189,9 @@ object TermToCHCWriter {
           else s"($currentStr ${dummyNamesAndSorts.map(_._1).mkString(" ")})"
 
         s"(define-fun $name (${fromParis.mkString(" ")}) ${to} (! $currentApp :next ${tr(next)}))"
-      case Init(name@_, init)         => s"${tr(init)}"
-      //case Invar(name, idx, inv)    => s"(define-fun $name () Bool (! ${tr(inv)} :invar-property $idx))"
-      case Invar(name@_, idx@_, inv)  => s"${tr(inv)}"
-      case Trans(name@_, trEx)        => s"${tr(trEx)}"
+      case Init(name @ _, init) => s"${tr(init)}"
+      // case Invar(name, idx, inv)    => s"(define-fun $name () Bool (! ${tr(inv)} :invar-property $idx))"
+      case Invar(name @ _, idx @ _, inv) => s"${tr(inv)}"
+      case Trans(name @ _, trEx)         => s"${tr(trEx)}"
     }
 }

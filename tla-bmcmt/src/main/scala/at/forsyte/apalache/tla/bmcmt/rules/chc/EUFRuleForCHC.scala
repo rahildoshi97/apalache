@@ -12,7 +12,10 @@ import at.forsyte.apalache.tla.pp.UniqueNameGenerator
  * EUFRule defines translations for reTLA patterns which encode equality, introduce values defined by if-then else, or
  * define, apply or update functions.
  */
-class EUFRuleForCHC(rewriter: ToTermRewriterForCHC, restrictedSetJudgementForCHC: RestrictedSetJudgementForCHC, gen: UniqueNameGenerator)
+class EUFRuleForCHC(
+    rewriter: ToTermRewriterForCHC,
+    restrictedSetJudgementForCHC: RestrictedSetJudgementForCHC,
+    gen: UniqueNameGenerator)
     extends FormulaRuleForCHC {
 
   private val eufOper: Set[TlaOper] = Set(

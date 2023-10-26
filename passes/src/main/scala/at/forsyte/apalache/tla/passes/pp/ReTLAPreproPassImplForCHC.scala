@@ -15,7 +15,7 @@ import com.google.inject.Inject
 /**
  * A preprocessing pass that simplifies TLA+ expressions by running multiple transformations.
  */
-class ReTLAPreproPassImplForCHC @Inject()(
+class ReTLAPreproPassImplForCHC @Inject() (
     options: OptionGroup.HasChecker,
     derivedPreds: DerivedPredicates,
     renaming: IncrementalRenaming,

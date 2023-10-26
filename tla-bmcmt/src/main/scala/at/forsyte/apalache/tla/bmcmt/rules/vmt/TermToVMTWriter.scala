@@ -87,41 +87,6 @@ object TermToVMTWriter {
       case _ => ""
     }
 
-  // Constructs an SMT variable type declaration from a TLA variable declaration
-  def mkSMTVarType(d: TlaVarDecl): String =
-    d.typeTag match {
-      case Typed(tt: TlaType1) =>
-        val (froms, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
-        def mkDecl(name: String) = s"$to "
-        s"${mkDecl(d.name)}"
-
-      case _ => ""
-    } // Bool Int
-
-  // Constructs an SMT variable declaration from a TLA variable declaration
-  def mkSMTVar(d: TlaVarDecl): String =
-    d.typeTag match {
-      case Typed(tt: TlaType1) =>
-        val (froms, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
-        def mkDecl(name: String) = s"$name "
-        s"${mkDecl(d.name)}"
-
-      case _ => ""
-    } // val1 val2
-
-  // Constructs an SMT variable prime declaration from a TLA variable declaration
-  def mkSMTVarPrime(d: TlaVarDecl): String =
-    d.typeTag match {
-      case Typed(tt: TlaType1) =>
-        val (froms, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt)) // pattern var froms in method mkSMTDecl is never used: use a wildcard `_` or suppress this warning with `froms@_`
-
-        def mkDecl(name: String) = s"$name "
-
-        s"${mkDecl(VMTprimeName(d.name))}"
-
-      case _ => ""
-    } // val1.prime val2,prime
-
   // Constructs an SMT sort declaration for a non-parametric sort.
   def mkSortDecl(us: UninterpretedSort): String =
     s"(declare-sort ${us.sortName} 0)"

@@ -69,7 +69,7 @@ package object chc {
 
   /**
    * Since ['] is not a legal symbol in SMTLIB, we have to choose a convention for the names of primed variables. If `x`
-   * is a variable name, then `x^` is the name used to represent `x'` in SMTLIB.
+   * is a variable name, then `x.prime` is the name used to represent `x'` in SMTLIB.
    */
   def CHCprimeName(s: String) = s"$s.prime"
   // Apply CHCprimeName to NameEx directly

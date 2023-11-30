@@ -3,8 +3,8 @@ package at.forsyte.apalache.tla.bmcmt.rules.chc
 import at.forsyte.apalache.tla.lir.formulas.{BoolSort, Term, Variable}
 
 /**
- * VMTExpr objects are wrappers around SMT Terms. They exist to let the writer to the output file know which labels to
- * add to which SMT expression.
+ * CHCExpr objects are wrappers around SMT Terms. They exist to let the writer to the output file know which labels to
+ * add to which CHC expression.
  */
 abstract class CHCExpr
 

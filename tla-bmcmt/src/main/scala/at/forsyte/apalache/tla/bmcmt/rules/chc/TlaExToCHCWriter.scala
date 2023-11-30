@@ -25,6 +25,7 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
       @unused cInit: Seq[(String, TlaEx)],
       initTransitions: Seq[(String, TlaEx)],
       nextTransitions: Seq[(String, TlaEx)],
+      // nextTransDeprimed: Seq[(String, TlaEx)],
       invariants: Seq[(String, TlaEx)]): Unit = {
 
     // First, we parse the constant declarations, to extract all restricted sets, i.e.,
@@ -57,6 +58,11 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
     val transitionCmps = cmpSeq(nextTransitions.map { case (name, ex) =>
       rewrite(ex).map { Trans(name, _) }
     })
+/*
+    // Each transition in nextTransitions needs the VMT wrapper Trans
+    val transitionCmpsDeprimed = cmpSeq(nextTransDeprimed.map { case (name, ex) =>
+      rewrite(ex).map { Trans(name, _) }
+    })*/
 
     // Each invariant in invariants needs the VMT wrapper Invar
     val invCmps = cmpSeq(invariants.zipWithIndex.map { case ((name, ex), i) =>
@@ -74,6 +80,18 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
     val transStrs = transitions.map(TermToCHCWriter.mkVMTString)
 
     val invStrs = invs.map(TermToCHCWriter.mkVMTString)
+/*
+    val (smtDeclsForCHCDeprimed @ _, (initsDeprimed @ _, transitionsDeprimed, invsDeprimed @ _)) = (for {
+      initTerms <- initCmps
+      transitionTerms <- transitionCmpsDeprimed
+      invTerms <- invCmps
+    } yield (initTerms, transitionTerms, invTerms)).run(SmtDeclarationsForCHC.init)
+
+    // val initStrsDeprimed = initsDeprimed.map(TermToCHCWriter.mkVMTString)
+
+    val transStrsDeprimed = transitionsDeprimed.map(TermToCHCWriter.mkVMTString)
+
+    // val invStrsDeprimed = invsDeprimed.map(TermToCHCWriter.mkVMTString)*/
 
     /*// Each variable v in varDecls needs the VMT binding Next(v, v')
     val nextBindings = varDecls.map { case d @ TlaVarDecl(name) =>
@@ -145,6 +163,10 @@ class TlaExToCHCWriter(gen: UniqueNameGenerator) {
         smtVarPrime.foreach(writer.print)
         writer.println(s")\n\t\t)\n\t)\n)")
       }
+      // writer.println(s"$transStrs") // List((), (), ..., ())
+      /*transStrs.foreach(writer.println)
+      writer.println()
+      transStrsDeprimed.foreach(writer.println)*/
       /*for (index <- 0 until transStrs.size) { // testing
         val element = transStrs(index)
         //writer.print(s"Element at index $index: $element")

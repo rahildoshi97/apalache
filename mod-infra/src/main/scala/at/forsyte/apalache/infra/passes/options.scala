@@ -203,13 +203,13 @@ object Config {
   }
 
   /**
-   * Configuration of transpile evaluation
+   * Configuration of transpilation
    *
-   * @param encodingType
+   * @param transpilationTarget
    *   the encoding type to use
    */
   case class Transpiler(
-      encodingType: Option[EncodingType] = Some(EncodingType.VMT),
+      transpilationTarget: Option[TranspilationTarget] = Some(TranspilationTarget.VMT),
       view: Option[String] = None)
       extends Config[Transpiler] {
 
@@ -390,20 +390,20 @@ object SMTEncoding {
 }
 
 /** Defines the transpile target options supported */
-sealed abstract class EncodingType
+sealed abstract class TranspilationTarget
 
-object EncodingType {
-  final case object VMT extends EncodingType {
+object TranspilationTarget {
+  final case object VMT extends TranspilationTarget {
     override def toString: String = "vmt"
   }
-  final case object CHC extends EncodingType {
+  final case object CHC extends TranspilationTarget {
     override def toString: String = "chc"
   }
 
-  val ofString: String => EncodingType = {
+  val ofString: String => TranspilationTarget = {
     case "chc"           => CHC
     case "vmt"           => VMT
-    case oddEncodingType => throw new IllegalArgumentException(s"Unexpected transpile target $oddEncodingType")
+    case oddTranspilationTarget => throw new IllegalArgumentException(s"Unexpected transpile target $oddTranspilationTarget")
   }
 }
 
@@ -731,16 +731,16 @@ object OptionGroup extends LazyLogging {
 
   /** Options used to configure transpile */
   case class Transpiler(
-      encodingType: EncodingType)
+      transpilationTarget: TranspilationTarget)
       extends OptionGroup
 
   object Transpiler extends Configurable[Config.Transpiler, Transpiler] with LazyLogging {
     def apply(transpiler: Config.Transpiler): Try[Transpiler] = {
 
       for {
-        encodingType <- transpiler.encodingType.toTry("transpiler.encodingType")
+        transpilationTarget <- transpiler.transpilationTarget.toTry("transpiler.transpilationTarget")
       } yield Transpiler(
-          encodingType = encodingType
+          transpilationTarget = transpilationTarget
       )
     }
   }

@@ -33,6 +33,8 @@ class ReTLAPreproPassImpl @Inject() (
         writerFactory,
     ) {
 
+  val languagePred: ReTLALanguagePred = ReTLALanguagePred()
+
   override def execute(tlaModule: TlaModule): PassResult = {
     val varSet = tlaModule.varDeclarations.map(_.name).toSet
 
@@ -45,11 +47,33 @@ class ReTLAPreproPassImpl @Inject() (
       )
 
     // Doesn't need a postRename, since Normalizer won't introduce bound vars
-    executeWithParams(tlaModule, transformationSequence, postRename = false, ReTLALanguagePred())
+    executeWithParams(tlaModule, transformationSequence, postRename = false, languagePred)
   }
 
-  override def dependencies = Set(ModuleProperty.Inlined)
+  override def dependencies: Set[ModuleProperty.Value] = Set(ModuleProperty.Inlined)
 
-  override def transformations = Set(ModuleProperty.Preprocessed)
+  override def transformations: Set[ModuleProperty.Value] = Set(ModuleProperty.Preprocessed)
+
+}
+
+class ReTLAPreproPassImplForCHC @Inject() (
+    options: OptionGroup.HasChecker,
+    derivedPreds: DerivedPredicates,
+    renaming: IncrementalRenaming,
+    tracker: TransformationTracker,
+    sourceStore: SourceStore,
+    changeListener: ChangeListener,
+    writerFactory: TlaWriterFactory)
+    extends ReTLAPreproPassImpl(
+        options,
+        derivedPreds,
+        renaming,
+        tracker,
+        sourceStore,
+        changeListener,
+        writerFactory,
+    ) {
+
+  override val languagePred: ReTLALanguagePredForCHC = ReTLALanguagePredForCHC()
 
 }

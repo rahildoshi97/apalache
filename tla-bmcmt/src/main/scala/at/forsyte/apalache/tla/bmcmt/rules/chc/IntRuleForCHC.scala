@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.chc
+package at.forsyte.apalache.tla.bmcmt.rules.vmt
 
 import at.forsyte.apalache.tla.bmcmt.RewriterException
 import at.forsyte.apalache.tla.lir.formulas.Integers._
@@ -11,7 +11,7 @@ import at.forsyte.apalache.tla.lir.{OperEx, TlaEx}
  * @author
  *   Rahil Doshi
  */
-class IntRuleForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRuleForCHC {
+class IntRuleForCHC(rewriter: ToTermRewriter) extends FormulaRule {
   override def isApplicable(ex: TlaEx): Boolean = {
     ex match {
       case OperEx(TlaArithOper.plus | TlaArithOper.minus | TlaArithOper.uminus | TlaArithOper.mult | TlaArithOper.div |
@@ -22,10 +22,10 @@ class IntRuleForCHC(rewriter: ToTermRewriterForCHC) extends FormulaRuleForCHC {
   }
 
   // convenience shorthand
-  private def rewrite: TlaEx => TermBuilderTForCHC = rewriter.rewrite
+  private def rewrite: TlaEx => TermBuilderT = rewriter.rewrite
 
   // Assume isApplicable
-  override def apply(ex: TlaEx): TermBuilderTForCHC =
+  override def apply(ex: TlaEx): TermBuilderT =
     ex match {
       case OperEx(TlaArithOper.plus, lhs, rhs) =>
         for {

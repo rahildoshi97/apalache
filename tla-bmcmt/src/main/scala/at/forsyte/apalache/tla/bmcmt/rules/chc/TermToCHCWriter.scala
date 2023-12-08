@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.chc
+package at.forsyte.apalache.tla.bmcmt.rules.vmt
 
 import at.forsyte.apalache.tla.lir.formulas.Booleans._
 import at.forsyte.apalache.tla.lir.formulas.EUF._
@@ -91,7 +91,7 @@ object TermToCHCWriter {
   def mkSMTDecl(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms @ _, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
+        val (froms @ _, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt))
         def mkDecl(name: String) = s"($name $to) "
         s"${mkDecl(d.name)}"
 
@@ -102,7 +102,7 @@ object TermToCHCWriter {
   def mkSMTDeclPrime(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms @ _, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
+        val (froms @ _, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt))
         def mkDecl(name: String) = s"($name $to) "
         s"${mkDecl(CHCprimeName(d.name))}"
 
@@ -113,7 +113,7 @@ object TermToCHCWriter {
   def mkSMTVarType(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms @ _, to) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
+        val (froms @ _, to) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt))
         def mkDecl(name: String) = s"$to "
         s"${mkDecl(d.name)}"
 
@@ -124,7 +124,7 @@ object TermToCHCWriter {
   def mkSMTVar(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms @ _, to @ _) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
+        val (froms @ _, to @ _) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt))
         def mkDecl(name: String) = s"$name "
         s"${mkDecl(d.name)}"
 
@@ -135,7 +135,7 @@ object TermToCHCWriter {
   def mkSMTVarPrime(d: TlaVarDecl): String =
     d.typeTag match {
       case Typed(tt: TlaType1) =>
-        val (froms @ _, to @ _) = sortAsFn(TlaType1ToSortConverterForCHC.sortFromType(tt))
+        val (froms @ _, to @ _) = sortAsFn(TlaType1ToSortConverter.sortFromType(tt))
 
         def mkDecl(name: String) = s"$name "
 
@@ -173,7 +173,7 @@ object TermToCHCWriter {
     s"(define-fun .axiom () Bool (! (distinct ${terms.map(tr).mkString(" ")}) :axiom true))"
 
   // Adds the VMT-specific tags, as defined by the VMTExpr wrapper
-  def mkVMTString(chcEx: CHCExpr): String =
+  def mkVMTString(chcEx: VMTExpr): String =
     chcEx match {
       case Next(name, current, next) =>
         val (froms, to) = sortAsFn(current.sort)

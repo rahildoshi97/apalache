@@ -2,8 +2,7 @@ package at.forsyte.apalache.tla.tooling.opt
 
 import at.forsyte.apalache.io.OutputManager
 import at.forsyte.apalache.tla.bmcmt.config.{ReTLAToCHCModule, ReTLAToVMTModule}
-import at.forsyte.apalache.tla.bmcmt.rules.vmt.TlaExToVMTWriter
-import at.forsyte.apalache.tla.bmcmt.rules.chc.TlaExToCHCWriter
+import at.forsyte.apalache.tla.bmcmt.rules.vmt.{TlaExToCHCWriter, TlaExToVMTWriter}
 import at.forsyte.apalache.infra.passes.options.{OptionGroup, TranspilationTarget}
 import at.forsyte.apalache.infra.passes.PassChainExecutor
 import org.backuity.clist.opt
@@ -60,7 +59,8 @@ class TranspileCmd extends AbstractCheckerCmd(name = "transpile", description = 
           case Right(_)      => Right(s"CHC constraints successfully generated at\n$outFilePath")
           case Left(failure) => Left(failure.exitCode, "Failed to generate CHC constraints")
         }
-      case oddEncoding => throw new IllegalArgumentException(s"Unexpected transpiler.transpile-target=$oddEncoding")
+      case oddTranspilationTarget =>
+        throw new IllegalArgumentException(s"Unexpected transpiler.transpile-target=$oddTranspilationTarget")
     }
   }
 }

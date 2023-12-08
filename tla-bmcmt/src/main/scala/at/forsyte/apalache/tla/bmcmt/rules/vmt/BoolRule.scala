@@ -1,4 +1,5 @@
 package at.forsyte.apalache.tla.bmcmt.rules.vmt
+
 import at.forsyte.apalache.tla.bmcmt.RewriterException
 import at.forsyte.apalache.tla.lir.formulas.Booleans._
 import at.forsyte.apalache.tla.lir.oper.TlaBoolOper
@@ -19,7 +20,7 @@ class BoolRule(rewriter: ToTermRewriter) extends FormulaRule {
     }
 
   // convenience shorthand
-  private def rewrite: TlaEx => TermBuilderT = rewriter.rewrite
+  protected def rewrite: TlaEx => TermBuilderT = rewriter.rewrite
 
   // Assume isApplicable
   override def apply(ex: TlaEx): TermBuilderT =
@@ -37,6 +38,10 @@ class BoolRule(rewriter: ToTermRewriter) extends FormulaRule {
           lhsTerm <- rewrite(lhs)
           rhsTerm <- rewrite(rhs)
         } yield Equiv(lhsTerm, rhsTerm)
-      case _ => throw new RewriterException(s"BoolRule not applicable to $ex", ex)
+      case _ => applyBoolRule(ex)
     }
+
+  def applyBoolRule(ex: TlaEx): TermBuilderT = {
+    throw new RewriterException(s"BoolRule not applicable to $ex", ex)
+  }
 }

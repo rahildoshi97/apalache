@@ -401,9 +401,10 @@ object TranspilationTarget {
   }
 
   val ofString: String => TranspilationTarget = {
-    case "chc"           => CHC
-    case "vmt"           => VMT
-    case oddTranspilationTarget => throw new IllegalArgumentException(s"Unexpected transpile target $oddTranspilationTarget")
+    case "chc" => CHC
+    case "vmt" => VMT
+    case oddTranspilationTarget =>
+      throw new IllegalArgumentException(s"Unexpected transpile target $oddTranspilationTarget")
   }
 }
 

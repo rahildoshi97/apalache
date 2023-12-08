@@ -69,3 +69,28 @@ object ValueRule {
         throw new RewriterException(s"Term construction is not supported: $other is not in TlaType1", ex)
     }
 }
+
+class ValueRuleForCHC extends ValueRule {
+
+  import ValueRule._
+
+  override def apply(ex: TlaEx): TermBuilderT = {
+    val term = ex match {
+      case ValEx(v) =>
+        v match {
+          case TlaInt(i) => IntLiteral(i)
+          case TlaStr(s) =>
+            val (tlaType, id) = ModelValueHandler.typeAndIndex(s).getOrElse((StrT1, s))
+            UninterpretedLiteral(id, UninterpretedSort(tlaType.toString))
+          case TlaBool(b) => if (b) True else False
+          case _          => throwOn(ex)
+        }
+      case nameEx: NameEx                           => termFromNameEx(nameEx)
+      case OperEx(TlaActionOper.prime, nEx: NameEx) =>
+        // Rename x' to x.prime for CHC
+        termFromNameEx(renamePrimesForCHC(nEx))
+      case _ => throwOn(ex)
+    }
+    storeUninterpretedLiteralOrVar(term).map { _ => term }
+  }
+}

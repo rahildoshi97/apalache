@@ -10,8 +10,12 @@ import scala.collection.immutable.HashSet
 /**
  * <p>Test whether the expressions fit into the reTLA fragment: all calls to user operators are inlined, except the
  * calls to nullary let-in definitions.</p>
+ *
+ * @author
+ *   Rahil Doshi
  */
-class ReTLALanguagePredForCHC extends ContextualLanguagePred {
+
+class ReTLALanguagePredForCHC extends ReTLALanguagePred {
   override protected def isOkInContext(letDefs: Set[String], expr: TlaEx): PredResult = {
     expr match {
       case ValEx(TlaBool(_)) | ValEx(TlaInt(_)) | ValEx(TlaStr(_)) =>
@@ -40,13 +44,6 @@ class ReTLALanguagePredForCHC extends ContextualLanguagePred {
             }
         )
 
-      // SANY quirk #19123:
-      // [f EXCEPT ![1] = ...] expands to
-      // OperEx( except, << 1 >>, ... ) and
-      // [f EXCEPT ![1,2] = ...] expands to
-      // OperEx(except, << << 1, 2 >> >> , ...)
-      // reTLA supports ONLY one-at-a-time, single-level EXCEPT, i.e.
-      // [f EXCEPT ![a,b,c,...] = r] (not [f EXCEPT ![a][b] = r] or [f EXCEPT ![a] = r, ![b] = s] )
       case OperEx(TlaFunOper.except, fn, key, value) =>
         isOkInContext(letDefs, fn)
           .and(

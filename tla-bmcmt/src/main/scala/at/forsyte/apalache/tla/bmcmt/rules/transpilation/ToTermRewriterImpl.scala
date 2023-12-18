@@ -1,4 +1,5 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.transpilation
+
 import at.forsyte.apalache.tla.bmcmt.RewriterException
 import at.forsyte.apalache.tla.lir.TlaEx
 import at.forsyte.apalache.tla.pp.UniqueNameGenerator
@@ -38,7 +39,6 @@ object ToTermRewriterImpl {
 
 class ToTermRewriterImplForCHC(constSets: ConstSetMapT, gen: UniqueNameGenerator)
     extends ToTermRewriterImpl(constSets, gen) {
-  // Less optimized rule lookup than SymbStateRewriter, since we have fewer rules, just search the list
   override protected val rules: List[FormulaRule] = List(
       new BoolRuleForCHC(this),
       new QuantifierRule(this, setJudgement),

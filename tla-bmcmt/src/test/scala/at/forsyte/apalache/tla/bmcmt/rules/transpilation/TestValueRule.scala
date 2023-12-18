@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.transpilation
 
 import at.forsyte.apalache.tla.lir.formulas.Booleans.{BoolVar, True}
 import at.forsyte.apalache.tla.lir.formulas.EUF.{UninterpretedLiteral, UninterpretedVar}

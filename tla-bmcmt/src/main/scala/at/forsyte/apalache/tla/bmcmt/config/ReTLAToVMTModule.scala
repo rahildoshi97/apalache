@@ -17,7 +17,7 @@ import at.forsyte.apalache.tla.passes.pp._
 import at.forsyte.apalache.tla.passes.typecheck.EtcTypeCheckerPassImpl
 
 /**
- * Transpiels reTLA inputs to VMT
+ * Transpiles reTLA inputs to VMT
  *
  * @author
  *   Jure Kukovec
@@ -25,11 +25,6 @@ import at.forsyte.apalache.tla.passes.typecheck.EtcTypeCheckerPassImpl
 
 class ReTLAToVMTModule(options: OptionGroup.HasTranspiler) extends ToolModule(options) {
 
-  def transpilationToCHCConfigure(): Unit = {
-    bind(classOf[LanguagePred]).to(classOf[ReTLACombinedPredicate])
-    bind(classOf[PreproPass]).to(classOf[ReTLAPreproPassImpl])
-    bind(classOf[TranspilePass]).to(classOf[ReTLAToVMTTranspilePassImpl])
-  }
   override def configure(): Unit = {
     // Ensure the given `options` will be bound to any OptionGroup interface
     // See https://stackoverflow.com/questions/31598703/does-guice-binding-bind-subclass-as-well
@@ -77,7 +72,13 @@ class ReTLAToVMTModule(options: OptionGroup.HasTranspiler) extends ToolModule(op
     bind(classOf[TransitionPass]).to(classOf[TransitionPassImpl])
     bind(classOf[OptPass]).to(classOf[OptPassImpl])
 
-    transpilationToCHCConfigure()
+    transpilationConfigure()
+  }
+
+  def transpilationConfigure(): Unit = {
+    bind(classOf[LanguagePred]).to(classOf[ReTLACombinedPredicate])
+    bind(classOf[PreproPass]).to(classOf[ReTLAPreproPassImpl])
+    bind(classOf[TranspilePass]).to(classOf[ReTLAToVMTTranspilePassImpl])
   }
 
   override def passes: Seq[Class[_ <: Pass]] = {
@@ -101,9 +102,10 @@ class ReTLAToVMTModule(options: OptionGroup.HasTranspiler) extends ToolModule(op
 
 }
 
+// Transpiles reTLA with arithmetic inputs to CHC
 class ReTLAToCHCModule(options: OptionGroup.HasTranspiler)
     extends ReTLAToVMTModule(options: OptionGroup.HasTranspiler) {
-  override def transpilationToCHCConfigure(): Unit = {
+  override def transpilationConfigure(): Unit = {
     bind(classOf[LanguagePred]).to(classOf[ReTLACombinedPredicateForCHC])
     bind(classOf[PreproPass]).to(classOf[ReTLAPreproPassImplForCHC])
     bind(classOf[TranspilePass]).to(classOf[ReTLAToCHCTranspilePassImpl])

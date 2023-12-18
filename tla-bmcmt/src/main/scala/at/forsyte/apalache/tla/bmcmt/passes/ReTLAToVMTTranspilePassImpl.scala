@@ -1,10 +1,10 @@
 package at.forsyte.apalache.tla.bmcmt.passes
 
 import at.forsyte.apalache.infra.passes.Pass.PassResult
-import at.forsyte.apalache.tla.bmcmt.rules.vmt.{TlaExToCHCWriter, TlaExToVMTWriter}
+import at.forsyte.apalache.tla.bmcmt.rules.transpilation.{TlaExToCHCWriter, TlaExToVMTWriter}
 import at.forsyte.apalache.tla.lir.oper.TlaActionOper
 import at.forsyte.apalache.tla.lir.transformations.standard.ReplaceFixed
-import at.forsyte.apalache.tla.lir.{OperEx, TlaEx, TlaModule}
+import at.forsyte.apalache.tla.lir.{ModuleProperty, OperEx, TlaEx, TlaModule}
 import at.forsyte.apalache.tla.lir.transformations.{LanguagePred, LanguageWatchdog, TransformationTracker}
 import at.forsyte.apalache.tla.pp.{NormalizedNames, UniqueNameGenerator}
 import com.google.inject.Inject
@@ -62,8 +62,8 @@ class ReTLAToVMTTranspilePassImpl @Inject() (
     Right(module)
   }
 
-  override def dependencies = Set()
-  override def transformations = Set()
+  override def dependencies: Set[ModuleProperty.Value] = Set()
+  override def transformations: Set[ModuleProperty.Value] = Set()
 }
 
 class ReTLAToCHCTranspilePassImpl @Inject() (

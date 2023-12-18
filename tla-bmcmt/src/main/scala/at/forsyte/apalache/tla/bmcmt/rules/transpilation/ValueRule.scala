@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.transpilation
 
 import at.forsyte.apalache.tla.bmcmt.RewriterException
 import at.forsyte.apalache.tla.lir._
@@ -44,11 +44,13 @@ class ValueRule extends FormulaRule {
       case nameEx: NameEx                           => termFromNameEx(nameEx)
       case OperEx(TlaActionOper.prime, nEx: NameEx) =>
         // Rename x' to x^ for VMT
-        termFromNameEx(renamePrimesForVMT(nEx))
+        termFromNameEx(renamePrimes(nEx))
       case _ => throwOn(ex)
     }
     storeUninterpretedLiteralOrVar(term).map { _ => term }
   }
+
+  def renamePrimes(nameEx: NameEx): NameEx = renamePrimesForVMT(nameEx)
 }
 
 // Some generic utility methods
@@ -72,25 +74,6 @@ object ValueRule {
 
 class ValueRuleForCHC extends ValueRule {
 
-  import ValueRule._
+  override def renamePrimes(nameEx: NameEx): NameEx = renamePrimesForCHC(nameEx)
 
-  override def apply(ex: TlaEx): TermBuilderT = {
-    val term = ex match {
-      case ValEx(v) =>
-        v match {
-          case TlaInt(i) => IntLiteral(i)
-          case TlaStr(s) =>
-            val (tlaType, id) = ModelValueHandler.typeAndIndex(s).getOrElse((StrT1, s))
-            UninterpretedLiteral(id, UninterpretedSort(tlaType.toString))
-          case TlaBool(b) => if (b) True else False
-          case _          => throwOn(ex)
-        }
-      case nameEx: NameEx                           => termFromNameEx(nameEx)
-      case OperEx(TlaActionOper.prime, nEx: NameEx) =>
-        // Rename x' to x.prime for CHC
-        termFromNameEx(renamePrimesForCHC(nEx))
-      case _ => throwOn(ex)
-    }
-    storeUninterpretedLiteralOrVar(term).map { _ => term }
-  }
 }

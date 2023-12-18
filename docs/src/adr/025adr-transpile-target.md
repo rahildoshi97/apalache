@@ -2,7 +2,7 @@
 
 | authors                    | last revised |
 |----------------------------|-------------:|
-| Rahil Doshi, Rodrigo Otoni |   07-12-2023 |
+| Rahil Doshi, Rodrigo Otoni |   18-12-2023 |
 
 **Table of Contents**
 
@@ -41,8 +41,8 @@ and implement this in the CLI option:
 #### Support for CHC transpile
 
 - Add new class `ReTLACombinedPredicateForCHC` extending `ReTLACombinedPredicate` to use in `ReTLAToVMTModule` with
-  new `ReTLALanguagePredForCHC` to test whether the expression fits into the reTLA fragement.
-- Add `ReTLALanguagePredForCHC` extending `ReTLALanguagePred` to include `TlaBoolOper` and `TlaArithOper`.
+  new class `ReTLALanguagePredForCHC` to test whether the expression fits into the reTLA with arithmetics fragment.
+- Add new class `ReTLALanguagePredForCHC` extending `ReTLALanguagePred` to include `TlaBoolOper` and `TlaArithOper`.
 - Add new class `ReTLAPreproPassImplForCHC` that extends `ReTLAPreproPassImpl` 
   to simplify TLA+ expressions to chc by running multiple transformations supported with `ReTLALanguagePredForCHC`.
 - Add new class `ReTLAToCHCModule` extending `ReTLAToVMTModule` to bind the chc classes together and
@@ -66,7 +66,7 @@ and implement this in the CLI option:
 
 
 - The infrastructure changes made for the `chc` transpilation type mirror the ones made for the `vmt` one.
-  See [PR ---] for details.
+  See [[PR 9](https://github.com/rahildoshi97/apalache/pull/9)] for details.
 
 ## Testing
 
@@ -77,8 +77,8 @@ Unit tests can be run using the below command:
 make test
 ```
 
-- Add new `TestReTLALanguagePredForCHC` to add support for testing language predicates 
-  with `ReTLALanguagePredForCHC`, supporting integer expressions for chc.
+- Add new class `TestReTLALanguagePredForCHC` to add support for testing language predicates 
+  with `ReTLALanguagePredForCHC`, supporting arithmetics (integer expressions) for `chc`.
 
 ### Integration test
 

@@ -8,7 +8,7 @@ import at.forsyte.apalache.tla.lir.formulas._
 import scalaz.Scalaz._
 import scalaz._
 
-package object vmt {
+package object transpilation {
   type ConstSetMapT = Map[String, UninterpretedSort]
 
   // collects all definitions/declarations that rules may discharge. In principle, this could be a single bucket

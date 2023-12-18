@@ -2824,14 +2824,14 @@ EXITCODE: OK
 
 ## running the transpile command
 
-### transpile ArithOper succeeds
+### transpile IntegerComparison succeeds
 
 ```sh
-$ apalache-mc transpile --transpile-target=vmt NoArithOper.tla | sed 's/I@.*//'
+$ apalache-mc transpile --transpile-target=vmt IntegerComparison.tla | sed 's/I@.*//'
 ...
 EXITCODE: OK
 ...
-$ apalache-mc transpile --transpile-target=chc NoArithOper.tla | sed 's/I@.*//'
+$ apalache-mc transpile --transpile-target=chc IntegerComparison.tla | sed 's/I@.*//'
 ...
 EXITCODE: OK
 ...
@@ -2841,10 +2841,6 @@ EXITCODE: OK
 
 ```sh
 $ apalache-mc transpile ArithOper.tla | sed 's/I@.*//'
-...
-EXITCODE: ERROR (75)
-...
-$ apalache-mc transpile --transpile-target=vmt ArithOper.tla | sed 's/I@.*//'
 ...
 EXITCODE: ERROR (75)
 ...

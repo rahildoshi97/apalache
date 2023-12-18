@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.transpilation
 
 import org.junit.runner.RunWith
 import org.scalatest.funsuite.AnyFunSuite

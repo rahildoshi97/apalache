@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.transpilation
 
 import at.forsyte.apalache.tla.bmcmt.RewriterException
 import at.forsyte.apalache.tla.lir.formulas.Integers._
@@ -6,7 +6,7 @@ import at.forsyte.apalache.tla.lir.oper.TlaArithOper
 import at.forsyte.apalache.tla.lir.{OperEx, TlaEx}
 
 /**
- * IntRule defines translations for reTLA patterns which use operators from propositional logic.
+ * IntRuleForCHC defines translations for reTLA patterns with arithmetics which use operators from propositional logic.
  *
  * @author
  *   Rahil Doshi
@@ -53,6 +53,6 @@ class IntRuleForCHC(rewriter: ToTermRewriter) extends FormulaRule {
           lhsTerm <- rewrite(lhs)
           rhsTerm <- rewrite(rhs)
         } yield Mod(lhsTerm, rhsTerm)
-      case _ => throw new RewriterException(s"IntRule not applicable to $ex", ex)
+      case _ => throw new RewriterException(s"IntRuleForCHC not applicable to $ex", ex)
     }
 }

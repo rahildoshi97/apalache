@@ -315,9 +315,9 @@ object SourceOption {
   /** Data to be loaded from a file */
   final case class FileSource(file: java.io.File, format: Format) extends SourceOption {
     def isFile = true
-    def exists = file.exists()
-    def toSources = (Source.fromFile(file), Seq())
-    def getContent = Try(Source.fromFile(file)(Codec.UTF8))
+    def exists: Boolean = file.exists()
+    def toSources: (Source, Seq[Source]) = (Source.fromFile(file), Seq())
+    def getContent: Try[String] = Try(Source.fromFile(file)(Codec.UTF8))
       .recoverWith { case e: FileNotFoundException =>
         Failure(new PassOptionException(s"File not found: ${e.getMessage()}"))
       }
@@ -358,8 +358,8 @@ object SourceOption {
       extends SourceOption {
     def isFile = false
     def exists = true
-    def toSources = (Source.fromString(content), aux.map(Source.fromString(_)))
-    def getContent = Try(content)
+    def toSources: (Source, Seq[Source]) = (Source.fromString(content), aux.map(Source.fromString(_)))
+    def getContent: Try[String] = Try(content)
 
     override def toString = s"StringSource(${format})"
   }

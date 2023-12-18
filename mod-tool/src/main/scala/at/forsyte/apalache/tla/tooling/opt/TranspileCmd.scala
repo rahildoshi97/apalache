@@ -1,12 +1,14 @@
 package at.forsyte.apalache.tla.tooling.opt
 
+import at.forsyte.apalache.infra.ExitCodes.TExitCode
 import at.forsyte.apalache.io.OutputManager
 import at.forsyte.apalache.tla.bmcmt.config.{ReTLAToCHCModule, ReTLAToVMTModule}
-import at.forsyte.apalache.tla.bmcmt.rules.vmt.{TlaExToCHCWriter, TlaExToVMTWriter}
-import at.forsyte.apalache.infra.passes.options.{OptionGroup, TranspilationTarget}
+import at.forsyte.apalache.tla.bmcmt.rules.transpilation.{TlaExToCHCWriter, TlaExToVMTWriter}
+import at.forsyte.apalache.infra.passes.options.{Config, OptionGroup, TranspilationTarget}
 import at.forsyte.apalache.infra.passes.PassChainExecutor
 import org.backuity.clist.opt
 import org.backuity.clist.util.Read
+import scala.util.Try
 
 class TranspileCmd extends AbstractCheckerCmd(name = "transpile", description = "Transpile and quit") {
 
@@ -18,7 +20,7 @@ class TranspileCmd extends AbstractCheckerCmd(name = "transpile", description = 
       description =
         s"the transpilation target: ${TranspilationTarget.VMT}, ${TranspilationTarget.CHC} (experimental), default: ${TranspilationTarget.VMT}")
 
-  override def toConfig() =
+  override def toConfig(): Try[Config.ApalacheConfig] =
     super.toConfig().map { cfg =>
       cfg.copy(
           transpiler = cfg.transpiler.copy(
@@ -30,7 +32,7 @@ class TranspileCmd extends AbstractCheckerCmd(name = "transpile", description = 
       )
     }
 
-  def run() = {
+  def run(): Either[(TExitCode, String), String] = {
     val cfg = configuration.get
     val options = OptionGroup.WithTranspiler(cfg).get
 

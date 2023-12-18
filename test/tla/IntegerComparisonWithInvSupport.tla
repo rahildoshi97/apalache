@@ -1,4 +1,4 @@
----------------------------- MODULE NoArithOper2 --------------------------
+---------------------------- MODULE IntegerComparisonWithInvSupport --------------------------
 VARIABLE
     \* @type: Bool;
     val1,

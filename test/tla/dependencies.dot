@@ -1,8 +1,0 @@
-digraph dependencies {
-  n192[label="A"];
-  n192 -> n193;
-  n193[label="B"];
-  n193 -> n194;
-  n194[label="C"];
-  n194 -> n192;
-}

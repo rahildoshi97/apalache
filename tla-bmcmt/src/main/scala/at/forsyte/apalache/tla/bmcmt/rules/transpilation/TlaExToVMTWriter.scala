@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.transpilation
 
 import at.forsyte.apalache.io.OutputManager
 import at.forsyte.apalache.tla.lir.TypedPredefs.TypeTagAsTlaType1
@@ -19,6 +19,12 @@ import scalaz.unused
  */
 class TlaExToVMTWriter(gen: UniqueNameGenerator) {
   // Main entry point.
+  val TermToWriter: parentTermToVMTWriter = TermToVMTWriter
+
+  def toTermRewriterImpl(setConstants: Map[String, UninterpretedSort]): ToTermRewriterImpl = {
+    new ToTermRewriterImpl(setConstants, gen)
+  }
+
   def annotateAndWrite(
       varDecls: Seq[TlaVarDecl],
       constDecls: Seq[TlaConstDecl],
@@ -37,30 +43,36 @@ class TlaExToVMTWriter(gen: UniqueNameGenerator) {
       }
       .toMap[String, UninterpretedSort]
 
-    val rewriter = new ToTermRewriterImpl(setConstants, gen)
+    val rewriter = toTermRewriterImpl(setConstants)
 
     // Not sure what to do with CInits yet, we might want to add them ass axioms later
-//    val cinits = cInit.map { case (_, ex) =>
-//      rewriter.rewrite(ex)
-//    }
-//    val cinitStrs = cinits.map(TermToVMTWriter.mkSMT2String)
+    //    val cinits = cInit.map { case (_, ex) =>
+    //      rewriter.rewrite(ex)
+    //    }
+    //    val cinitStrs = cinits.map(TermToVMTWriter.mkSMT2String)
 
     // convenience shorthand
     def rewrite: TlaEx => TermBuilderT = rewriter.rewrite
 
     // Each transition in initTransitions needs the VMT wrapper Init
     val initCmps = cmpSeq(initTransitions.map { case (name, ex) =>
-      rewrite(ex).map { Init(name, _) }
+      rewrite(ex).map {
+        Init(name, _)
+      }
     })
 
     // Each transition in nextTransitions needs the VMT wrapper Trans
     val transitionCmps = cmpSeq(nextTransitions.map { case (name, ex) =>
-      rewrite(ex).map { Trans(name, _) }
+      rewrite(ex).map {
+        Trans(name, _)
+      }
     })
 
     // Each invariant in invariants needs the VMT wrapper Invar
     val invCmps = cmpSeq(invariants.zipWithIndex.map { case ((name, ex), i) =>
-      rewrite(ex).map { Invar(name, i, _) }
+      rewrite(ex).map {
+        Invar(name, i, _)
+      }
     })
 
     val (smtDecls, (inits, transitions, invs)) = (for {
@@ -69,11 +81,27 @@ class TlaExToVMTWriter(gen: UniqueNameGenerator) {
       invTerms <- invCmps
     } yield (initTerms, transitionTerms, invTerms)).run(SmtDeclarations.init)
 
-    val initStrs = inits.map(TermToVMTWriter.mkVMTString)
+    val initStrs = inits.map(TermToWriter.mkVMTString)
 
-    val transStrs = transitions.map(TermToVMTWriter.mkVMTString)
+    val transStrs = transitions.map(TermToWriter.mkVMTString)
 
-    val invStrs = invs.map(TermToVMTWriter.mkVMTString)
+    val invStrs = invs.map(TermToWriter.mkVMTString)
+
+    // Variable declarations
+    val smtVarDecls = varDecls.map(TermToWriter.mkSMTDecl)
+
+    annotateAndWrite2(varDecls, setConstants, initStrs, transStrs, invStrs, smtVarDecls, smtDecls)
+
+  }
+
+  def annotateAndWrite2(
+      varDecls: Seq[TlaVarDecl],
+      setConstants: Map[String, UninterpretedSort],
+      initStrs: List[String],
+      transStrs: List[String],
+      invStrs: List[String],
+      smtVarDecls: Seq[String],
+      smtDecls: SmtDeclarations): Unit = {
 
     // Each variable v in varDecls needs the VMT binding Next(v, v')
     val nextBindings = varDecls.map { case d @ TlaVarDecl(name) =>
@@ -81,22 +109,19 @@ class TlaExToVMTWriter(gen: UniqueNameGenerator) {
       Next(nextName(name), mkVariable(name, sort), mkVariable(VMTprimeName(name), sort))
     }
 
-    val nextStrs = nextBindings.map(TermToVMTWriter.mkVMTString)
-
-    // Variable declarations
-    val smtVarDecls = varDecls.map(TermToVMTWriter.mkSMTDecl)
+    val nextStrs = nextBindings.map(TermToWriter.mkVMTString)
 
     // Sort declaration
     val allSorts = setConstants.values.toSet ++ smtDecls.uninterpretedSorts.map(UninterpretedSort)
-    val sortDecls = allSorts.map(TermToVMTWriter.mkSortDecl)
+    val sortDecls = allSorts.map(TermToWriter.mkSortDecl)
 
     // Uninterpreted literal declaration and uniqueness assert
-    val ulitDecls = smtDecls.uninterpretedLiterals.values.map(TermToVMTWriter.mkConstDecl)
+    val ulitDecls = smtDecls.uninterpretedLiterals.values.map(TermToWriter.mkConstDecl)
     val disticntAsserts = allSorts.flatMap { s =>
       val litsForSortS = smtDecls.uninterpretedLiterals.values.filter {
         _.sort == s
       }
-      (if (litsForSortS.size > 1) Some(litsForSortS) else None).map(TermToVMTWriter.assertDistinct)
+      (if (litsForSortS.size > 1) Some(litsForSortS) else None).map(TermToWriter.assertDistinct)
     }
 
     OutputManager.withWriterInRunDir(TlaExToVMTWriter.outFileName) { writer =>
@@ -114,9 +139,9 @@ class TlaExToVMTWriter(gen: UniqueNameGenerator) {
       writer.println(";Variable bindings")
       nextStrs.foreach(writer.println)
       writer.println()
-//      writer.println(";TLA constant initialization")
-//      cinitStrs.foreach(writer.println)
-//      writer.println()
+      //      writer.println(";TLA constant initialization")
+      //      cinitStrs.foreach(writer.println)
+      //      writer.println()
       writer.println(";Initial states")
       initStrs.foreach(writer.println)
       writer.println()

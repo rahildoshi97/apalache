@@ -4,7 +4,6 @@ import at.forsyte.apalache.tla.lir._
 import at.forsyte.apalache.tla.lir.oper._
 import at.forsyte.apalache.tla.lir.transformations.{PredResult, PredResultFail, PredResultOk}
 import at.forsyte.apalache.tla.lir.values._
-
 import scala.collection.immutable.HashSet
 
 /**
@@ -15,6 +14,7 @@ import scala.collection.immutable.HashSet
  *   Jure Kukovec
  */
 class ReTLALanguagePred extends ContextualLanguagePred {
+  def reTLALanguagePred(oper: TlaOper): Boolean = ReTLALanguagePred.operators.contains(oper)
   override protected def isOkInContext(letDefs: Set[String], expr: TlaEx): PredResult = {
     expr match {
       case ValEx(TlaBool(_)) | ValEx(TlaInt(_)) | ValEx(TlaStr(_)) =>
@@ -30,7 +30,7 @@ class ReTLALanguagePred extends ContextualLanguagePred {
       case OperEx(TlaActionOper.prime, _: NameEx) =>
         PredResultOk()
 
-      case OperEx(oper, args @ _*) if ReTLALanguagePred.operators.contains(oper) =>
+      case OperEx(oper, args @ _*) if reTLALanguagePred(oper) =>
         allArgsOk(letDefs, args)
 
       // Function application and except are the only place we allow tuples, because that's how multivariable functions
@@ -111,18 +111,47 @@ object ReTLALanguagePred {
         TlaOper.eq,
         TlaOper.ne,
         // IntArith not in v1
-        //        TlaArithOper.div,
-        //        TlaArithOper.exp,
-        //        TlaArithOper.ge,
-        //        TlaArithOper.gt,
-        //        TlaArithOper.le,
-        //        TlaArithOper.lt,
-        //        TlaArithOper.minus,
-        //        TlaArithOper.mod,
-        //        TlaArithOper.mult,
-        //        TlaArithOper.plus,
-        //        TlaArithOper.uminus,
     )
 
   def apply(): ReTLALanguagePred = singleton
+}
+
+// <p>Test whether the expressions fit into the reTLA with arithmetics fragment
+class ReTLALanguagePredForCHC extends ReTLALanguagePred {
+  override def reTLALanguagePred(oper: TlaOper): Boolean = ReTLALanguagePredForCHC.operators.contains(oper)
+}
+
+object ReTLALanguagePredForCHC {
+  private val singleton = new ReTLALanguagePredForCHC
+
+  protected val operators: HashSet[TlaOper] =
+    HashSet(
+        ApalacheOper.assign,
+        ApalacheOper.skolem,
+        TlaBoolOper.and,
+        TlaBoolOper.equiv,
+        TlaBoolOper.exists,
+        TlaBoolOper.forall,
+        TlaBoolOper.implies,
+        TlaBoolOper.not,
+        TlaBoolOper.or,
+        TlaControlOper.ifThenElse,
+        TlaFunOper.funDef,
+        TlaOper.eq,
+        TlaOper.ne,
+        // IntArith
+        TlaArithOper.div,
+        TlaArithOper.exp,
+        TlaArithOper.ge,
+        TlaArithOper.gt,
+        TlaArithOper.le,
+        TlaArithOper.lt,
+        TlaArithOper.minus,
+        TlaArithOper.mod,
+        TlaArithOper.mult,
+        TlaArithOper.plus,
+        TlaArithOper.uminus,
+    )
+
+  def apply(): ReTLALanguagePredForCHC = singleton
 }

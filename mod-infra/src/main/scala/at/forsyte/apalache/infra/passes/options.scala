@@ -203,6 +203,20 @@ object Config {
   }
 
   /**
+   * Configuration of transpilation
+   *
+   * @param transpilationTarget
+   *   the encoding type to use
+   */
+  case class Transpiler(
+      transpilationTarget: Option[TranspilationTarget] = Some(TranspilationTarget.VMT),
+      view: Option[String] = None)
+      extends Config[Transpiler] {
+
+    def empty: Transpiler = Generic[Transpiler].from(Generic[Transpiler].to(this).map(emptyPoly))
+  }
+
+  /**
    * Configuration of trace evaluation
    *
    * @param trace
@@ -254,6 +268,7 @@ object Config {
       input: Input = Input(),
       output: Output = Output(),
       checker: Checker = Checker(),
+      transpiler: Transpiler = Transpiler(),
       typechecker: Typechecker = Typechecker(),
       tracee: Tracee = Tracee(),
       server: Server = Server())
@@ -300,9 +315,9 @@ object SourceOption {
   /** Data to be loaded from a file */
   final case class FileSource(file: java.io.File, format: Format) extends SourceOption {
     def isFile = true
-    def exists = file.exists()
-    def toSources = (Source.fromFile(file), Seq())
-    def getContent = Try(Source.fromFile(file)(Codec.UTF8))
+    def exists: Boolean = file.exists()
+    def toSources: (Source, Seq[Source]) = (Source.fromFile(file), Seq())
+    def getContent: Try[String] = Try(Source.fromFile(file)(Codec.UTF8))
       .recoverWith { case e: FileNotFoundException =>
         Failure(new PassOptionException(s"File not found: ${e.getMessage()}"))
       }
@@ -343,8 +358,8 @@ object SourceOption {
       extends SourceOption {
     def isFile = false
     def exists = true
-    def toSources = (Source.fromString(content), aux.map(Source.fromString(_)))
-    def getContent = Try(content)
+    def toSources: (Source, Seq[Source]) = (Source.fromString(content), aux.map(Source.fromString(_)))
+    def getContent: Try[String] = Try(content)
 
     override def toString = s"StringSource(${format})"
   }
@@ -371,6 +386,25 @@ object SMTEncoding {
     case "funArrays"     => FunArrays
     case "oopsla19"      => OOPSLA19
     case oddEncodingType => throw new IllegalArgumentException(s"Unexpected SMT encoding type $oddEncodingType")
+  }
+}
+
+/** Defines the transpile target options supported */
+sealed abstract class TranspilationTarget
+
+object TranspilationTarget {
+  final case object VMT extends TranspilationTarget {
+    override def toString: String = "vmt"
+  }
+  final case object CHC extends TranspilationTarget {
+    override def toString: String = "chc"
+  }
+
+  val ofString: String => TranspilationTarget = {
+    case "chc" => CHC
+    case "vmt" => VMT
+    case oddTranspilationTarget =>
+      throw new IllegalArgumentException(s"Unexpected transpile target $oddTranspilationTarget")
   }
 }
 
@@ -696,6 +730,22 @@ object OptionGroup extends LazyLogging {
     }
   }
 
+  /** Options used to configure transpile */
+  case class Transpiler(
+      transpilationTarget: TranspilationTarget)
+      extends OptionGroup
+
+  object Transpiler extends Configurable[Config.Transpiler, Transpiler] with LazyLogging {
+    def apply(transpiler: Config.Transpiler): Try[Transpiler] = {
+
+      for {
+        transpilationTarget <- transpiler.transpilationTarget.toTry("transpiler.transpilationTarget")
+      } yield Transpiler(
+          transpilationTarget = transpilationTarget
+      )
+    }
+  }
+
   /** Options used to configure the server */
   case class Server(
       port: Int)
@@ -751,7 +801,11 @@ object OptionGroup extends LazyLogging {
     val predicates: Predicates
   }
 
-  trait HasTracee extends HasCheckerPreds {
+  trait HasTranspiler extends HasCheckerPreds {
+    val transpiler: Transpiler
+  }
+
+  trait HasTracee extends HasTranspiler {
     val tracee: Tracee
   }
 
@@ -857,12 +911,13 @@ object OptionGroup extends LazyLogging {
       typechecker: Typechecker,
       checker: Checker,
       predicates: Predicates,
+      transpiler: Transpiler,
       tracee: Tracee)
       extends HasTracee
 
   object WithTracee extends Configurable[Config.ApalacheConfig, WithTracee] {
     def apply(cfg: Config.ApalacheConfig): Try[WithTracee] = for {
-      opts <- WithCheckerPreds(cfg)
+      opts <- WithTranspiler(cfg)
       tracee <- Tracee(cfg.tracee)
     } yield WithTracee(
         opts.common,
@@ -871,6 +926,7 @@ object OptionGroup extends LazyLogging {
         opts.typechecker,
         opts.checker,
         opts.predicates,
+        opts.transpiler,
         tracee,
     )
   }
@@ -897,4 +953,30 @@ object OptionGroup extends LazyLogging {
         predicates,
     )
   }
+
+  case class WithTranspiler(
+      common: Common,
+      input: Input,
+      output: Output,
+      typechecker: Typechecker,
+      checker: Checker,
+      predicates: Predicates,
+      transpiler: Transpiler)
+      extends HasTranspiler
+
+  object WithTranspiler extends Configurable[Config.ApalacheConfig, WithTranspiler] {
+    def apply(cfg: Config.ApalacheConfig): Try[WithTranspiler] = for {
+      opts <- WithCheckerPreds(cfg)
+      transpiler <- Transpiler(cfg.transpiler)
+    } yield WithTranspiler(
+        opts.common,
+        opts.input,
+        opts.output,
+        opts.typechecker,
+        opts.checker,
+        opts.predicates,
+        transpiler,
+    )
+  }
+
 }

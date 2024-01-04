@@ -1,4 +1,5 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.transpilation
+
 import at.forsyte.apalache.tla.bmcmt.RewriterException
 import at.forsyte.apalache.tla.lir.TlaEx
 import at.forsyte.apalache.tla.pp.UniqueNameGenerator
@@ -11,8 +12,8 @@ import at.forsyte.apalache.tla.pp.UniqueNameGenerator
  */
 class ToTermRewriterImpl(constSets: ConstSetMapT, gen: UniqueNameGenerator) extends ToTermRewriter {
   // Less optimized rule lookup than SymbStateRewriter, since we have fewer rules, just search the list
-  private val setJudgement = new RestrictedSetJudgement(constSets)
-  private val rules: List[FormulaRule] = List(
+  protected val setJudgement = new RestrictedSetJudgement(constSets)
+  protected val rules: List[FormulaRule] = List(
       new BoolRule(this),
       new QuantifierRule(this, setJudgement),
       new EUFRule(this, setJudgement, gen),
@@ -34,4 +35,15 @@ object ToTermRewriterImpl {
       constSets: ConstSetMapT = Map.empty,
       generator: UniqueNameGenerator = new UniqueNameGenerator): ToTermRewriter =
     new ToTermRewriterImpl(constSets, generator)
+}
+
+class ToTermRewriterImplForCHC(constSets: ConstSetMapT, gen: UniqueNameGenerator)
+    extends ToTermRewriterImpl(constSets, gen) {
+  override protected val rules: List[FormulaRule] = List(
+      new BoolRuleForCHC(this),
+      new QuantifierRule(this, setJudgement),
+      new EUFRule(this, setJudgement, gen),
+      new ValueRuleForCHC,
+      new IntRuleForCHC(this),
+  )
 }

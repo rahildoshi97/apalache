@@ -8,7 +8,7 @@ import at.forsyte.apalache.tla.lir.formulas._
 import scalaz.Scalaz._
 import scalaz._
 
-package object vmt {
+package object transpilation {
   type ConstSetMapT = Map[String, UninterpretedSort]
 
   // collects all definitions/declarations that rules may discharge. In principle, this could be a single bucket
@@ -75,6 +75,12 @@ package object vmt {
   // Apply VMTprimeName to NameEx directly
   def renamePrimesForVMT(unprimedNameEx: NameEx): NameEx =
     NameEx(VMTprimeName(unprimedNameEx.name))(unprimedNameEx.typeTag)
+
+  def CHCprimeName(s: String) = s"$s.prime"
+
+  // Apply CHCprimeName to NameEx directly
+  def renamePrimesForCHC(unprimedNameEx: NameEx): NameEx =
+    NameEx(CHCprimeName(unprimedNameEx.name))(unprimedNameEx.typeTag)
 
   /**
    * VMT uses a named function definition to explicitly annotate which pairs of symbols represent the current- and

@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.transpilation
 
 import at.forsyte.apalache.tla.bmcmt.RewriterException
 import at.forsyte.apalache.tla.lir.formulas._

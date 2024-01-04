@@ -1,4 +1,4 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.transpilation
 
 import at.forsyte.apalache.tla.lir.{BoolT1, IntT1, SetT1, TlaEx, TlaType1}
 import at.forsyte.apalache.tla.lir.formulas.Booleans._

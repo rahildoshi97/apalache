@@ -2822,6 +2822,39 @@ The outcome is: NoError
 EXITCODE: OK
 ```
 
+## running the transpile command
+
+### transpile IntegerComparison succeeds
+
+```sh
+$ apalache-mc transpile --transpile-target=vmt IntegerComparison.tla | sed 's/I@.*//'
+...
+EXITCODE: OK
+...
+$ apalache-mc transpile --transpile-target=chc IntegerComparison.tla | sed 's/I@.*//'
+...
+EXITCODE: OK
+...
+```
+
+### transpile ArithOper fails
+
+```sh
+$ apalache-mc transpile ArithOper.tla | sed 's/I@.*//'
+...
+EXITCODE: ERROR (75)
+...
+```
+
+### transpile ArithOper succeeds
+
+```sh
+$ apalache-mc transpile --transpile-target=chc ArithOper.tla | sed 's/I@.*//'
+...
+EXITCODE: OK
+...
+```
+
 ## running the typecheck command
 
 ### typecheck Empty.tla reports no error

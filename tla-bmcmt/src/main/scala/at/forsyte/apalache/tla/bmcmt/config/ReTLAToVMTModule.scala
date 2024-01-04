@@ -13,19 +13,18 @@ import com.google.inject.TypeLiteral
 import at.forsyte.apalache.infra.passes.options.OptionGroup
 import at.forsyte.apalache.tla.passes.assignments.{PrimingPass, PrimingPassImpl, TransitionPass, TransitionPassImpl}
 import at.forsyte.apalache.tla.passes.imp.{SanyParserPass, SanyParserPassImpl}
-import at.forsyte.apalache.tla.passes.pp.{
-  ConfigurationPass, ConfigurationPassImpl, InlinePass, InlinePassImpl, OptPass, OptPassImpl, PreproPass,
-  ReTLAPreproPassImpl, WatchdogPassImpl,
-}
+import at.forsyte.apalache.tla.passes.pp._
 import at.forsyte.apalache.tla.passes.typecheck.EtcTypeCheckerPassImpl
 
 /**
- * Transpiels reTLA inputs to VMT
+ * Transpiles reTLA inputs to VMT
  *
  * @author
  *   Jure Kukovec
  */
-class ReTLAToVMTModule(options: OptionGroup.HasCheckerPreds) extends ToolModule(options) {
+
+class ReTLAToVMTModule(options: OptionGroup.HasTranspiler) extends ToolModule(options) {
+
   override def configure(): Unit = {
     // Ensure the given `options` will be bound to any OptionGroup interface
     // See https://stackoverflow.com/questions/31598703/does-guice-binding-bind-subclass-as-well
@@ -37,6 +36,7 @@ class ReTLAToVMTModule(options: OptionGroup.HasCheckerPreds) extends ToolModule(
     bind(classOf[OptionGroup.HasTypechecker]).toInstance(options)
     bind(classOf[OptionGroup.HasChecker]).toInstance(options)
     bind(classOf[OptionGroup.HasCheckerPreds]).toInstance(options)
+    bind(classOf[OptionGroup.HasTranspiler]).toInstance(options)
 
     // The `DerivedPredicate` instance used to communicate specification predicates between passes
     val derivedPreds = DerivedPredicates.Impl()
@@ -46,31 +46,22 @@ class ReTLAToVMTModule(options: OptionGroup.HasCheckerPreds) extends ToolModule(
     bind(classOf[DerivedPredicates.Configurable]).toInstance(derivedPreds)
 
     // exception handler
-    bind(classOf[ExceptionAdapter])
-      .to(classOf[CheckerExceptionAdapter])
-
-    bind(classOf[LanguagePred])
-      .to(classOf[ReTLACombinedPredicate])
+    bind(classOf[ExceptionAdapter]).to(classOf[CheckerExceptionAdapter])
 
     // stores
     // Create an annotation store with the custom provider.
     // We have to use TypeLiteral, as otherwise Guice is getting confused by type erasure.
-    bind(new TypeLiteral[AnnotationStore]() {})
-      .toProvider(classOf[AnnotationStoreProvider])
-    bind(classOf[ExprGradeStore])
-      .to(classOf[ExprGradeStoreImpl])
+    bind(new TypeLiteral[AnnotationStore]() {}).toProvider(classOf[AnnotationStoreProvider])
+    bind(classOf[ExprGradeStore]).to(classOf[ExprGradeStoreImpl])
 
     // writers
-    bind(classOf[TlaWriterFactory])
-      .to(classOf[PrettyWriterWithAnnotationsFactory])
+    bind(classOf[TlaWriterFactory]).to(classOf[PrettyWriterWithAnnotationsFactory])
 
     // transformation tracking
     // TODO: the binding of TransformationListener should disappear in the future
-    bind(classOf[TransformationListener])
-      .to(classOf[ChangeListener])
+    bind(classOf[TransformationListener]).to(classOf[ChangeListener])
     // check TransformationTrackerProvider to find out which listeners the tracker is using
-    bind(classOf[TransformationTracker])
-      .toProvider(classOf[TransformationTrackerProvider])
+    bind(classOf[TransformationTracker]).toProvider(classOf[TransformationTrackerProvider])
 
     // Bind all passes
     bind(classOf[SanyParserPass]).to(classOf[SanyParserPassImpl])
@@ -78,9 +69,15 @@ class ReTLAToVMTModule(options: OptionGroup.HasCheckerPreds) extends ToolModule(
     bind(classOf[InlinePass]).to(classOf[InlinePassImpl])
     bind(classOf[PrimingPass]).to(classOf[PrimingPassImpl])
     bind(classOf[VCGenPass]).to(classOf[VCGenPassImpl])
-    bind(classOf[PreproPass]).to(classOf[ReTLAPreproPassImpl])
     bind(classOf[TransitionPass]).to(classOf[TransitionPassImpl])
     bind(classOf[OptPass]).to(classOf[OptPassImpl])
+
+    transpilationConfigure()
+  }
+
+  def transpilationConfigure(): Unit = {
+    bind(classOf[LanguagePred]).to(classOf[ReTLACombinedPredicate])
+    bind(classOf[PreproPass]).to(classOf[ReTLAPreproPassImpl])
     bind(classOf[TranspilePass]).to(classOf[ReTLAToVMTTranspilePassImpl])
   }
 
@@ -101,6 +98,17 @@ class ReTLAToVMTModule(options: OptionGroup.HasCheckerPreds) extends ToolModule(
         // ConstraintGenPass is in the very end of the pipeline
         classOf[TranspilePass],
     )
+  }
+
+}
+
+// Transpiles reTLA with arithmetic inputs to CHC
+class ReTLAToCHCModule(options: OptionGroup.HasTranspiler)
+    extends ReTLAToVMTModule(options: OptionGroup.HasTranspiler) {
+  override def transpilationConfigure(): Unit = {
+    bind(classOf[LanguagePred]).to(classOf[ReTLACombinedPredicateForCHC])
+    bind(classOf[PreproPass]).to(classOf[ReTLAPreproPassImplForCHC])
+    bind(classOf[TranspilePass]).to(classOf[ReTLAToCHCTranspilePassImpl])
   }
 
 }

@@ -1,9 +1,9 @@
-package at.forsyte.apalache.tla.bmcmt.rules.vmt
+package at.forsyte.apalache.tla.bmcmt.rules.transpilation
 
 import at.forsyte.apalache.tla.lir.{TlaType1, TlaVarDecl, Typed}
-import at.forsyte.apalache.tla.lir.formulas.Integers._
 import at.forsyte.apalache.tla.lir.formulas.Booleans._
 import at.forsyte.apalache.tla.lir.formulas.EUF._
+import at.forsyte.apalache.tla.lir.formulas.Integers._
 import at.forsyte.apalache.tla.lir.formulas._
 
 /**
@@ -12,12 +12,13 @@ import at.forsyte.apalache.tla.lir.formulas._
  * @author
  *   Jure Kukovec
  */
-object TermToVMTWriter {
+object TermToVMTWriter extends parentTermToVMTWriter {}
 
-  private def tr: Term => String = mkSMT2String // shorthand rename
+abstract class parentTermToVMTWriter {
+  protected def tr: Term => String = mkSMT2String // shorthand rename
 
   // And and Or translate in the same way, modulo the values in the nullary case
-  private def mkAndOrArgs(head: String, onEmpty: String, args: Seq[Term]): String =
+  protected def mkAndOrArgs(head: String, onEmpty: String, args: Seq[Term]): String =
     args match {
       case Nil      => onEmpty
       case h +: Nil => mkSMT2String(h)
@@ -26,7 +27,7 @@ object TermToVMTWriter {
         s"($head ${argStrings.mkString(" ")})"
     }
 
-  private def mkQuant(quant: String, boundVars: Seq[(String, Sort)], p: Term): String = {
+  protected def mkQuant(quant: String, boundVars: Seq[(String, Sort)], p: Term): String = {
     val pairs = boundVars.map { case (name, sort) =>
       s"($name ${sortStringForQuant(sort)})"
     }
@@ -46,7 +47,7 @@ object TermToVMTWriter {
   // In declare-fun, the syntax is (declare-fun (from1 ... fromN) to), where
   // (declare-fun () to) represents a constant declaration.
   // sortAsFn constructs a pair (List(from1,...,fromN),to) from a given sort
-  private def sortAsFn(sort: Sort): (List[String], String) = sort match {
+  protected def sortAsFn(sort: Sort): (List[String], String) = sort match {
     case FunctionSort(to, from @ _*) => (from.toList.map(sortStringForQuant), sortStringForQuant(to))
     case s                           => (List.empty, sortStringForQuant(s))
   }
@@ -72,9 +73,13 @@ object TermToVMTWriter {
       case Equal(a, b)                   => s"(= ${tr(a)} ${tr(b)})"
       case Apply(fn, args @ _*)          => s"(${tr(fn)} ${args.map(tr).mkString(" ")})"
       case ITE(cond, thenTerm, elseTerm) => s"(ite ${tr(cond)} ${tr(thenTerm)} ${tr(elseTerm)})"
-      case x                             => throw new NotImplementedError(s"${x.getClass.getName} is not supported.")
+      case x                             => ex1(x)
 
     }
+
+  def ex1(term: Term): String = {
+    throw new NotImplementedError(s"${term.getClass.getName} is not supported.")
+  }
 
   // Constructs an SMT variable declaration from a TLA variable declaration
   def mkSMTDecl(d: TlaVarDecl): String =

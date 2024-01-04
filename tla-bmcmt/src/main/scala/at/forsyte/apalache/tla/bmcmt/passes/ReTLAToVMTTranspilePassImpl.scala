@@ -1,10 +1,10 @@
 package at.forsyte.apalache.tla.bmcmt.passes
 
 import at.forsyte.apalache.infra.passes.Pass.PassResult
-import at.forsyte.apalache.tla.bmcmt.rules.vmt.TlaExToVMTWriter
+import at.forsyte.apalache.tla.bmcmt.rules.transpilation.{TlaExToCHCWriter, TlaExToVMTWriter}
 import at.forsyte.apalache.tla.lir.oper.TlaActionOper
 import at.forsyte.apalache.tla.lir.transformations.standard.ReplaceFixed
-import at.forsyte.apalache.tla.lir.{OperEx, TlaEx, TlaModule}
+import at.forsyte.apalache.tla.lir.{ModuleProperty, OperEx, TlaEx, TlaModule}
 import at.forsyte.apalache.tla.lir.transformations.{LanguagePred, LanguageWatchdog, TransformationTracker}
 import at.forsyte.apalache.tla.pp.{NormalizedNames, UniqueNameGenerator}
 import com.google.inject.Inject
@@ -34,6 +34,8 @@ class ReTLAToVMTTranspilePassImpl @Inject() (
         (d.name, d.body)
       }
 
+  val writer = new TlaExToVMTWriter(gen)
+
   override def execute(module: TlaModule): PassResult = {
     // Check if still ok fragment (sanity check, see postTypeChecker)
     LanguageWatchdog(pred).check(module)
@@ -48,9 +50,7 @@ class ReTLAToVMTTranspilePassImpl @Inject() (
     val vcInvs = getTransitionsWithNames(module, NormalizedNames.VC_INV_PREFIX)
     val vcActionInvs = getTransitionsWithNames(module, NormalizedNames.VC_ACTION_INV_PREFIX)
 
-    val vmtWriter = new TlaExToVMTWriter(gen)
-
-    vmtWriter.annotateAndWrite(
+    writer.annotateAndWrite(
         module.varDeclarations,
         module.constDeclarations,
         cinitP,
@@ -62,6 +62,15 @@ class ReTLAToVMTTranspilePassImpl @Inject() (
     Right(module)
   }
 
-  override def dependencies = Set()
-  override def transformations = Set()
+  override def dependencies: Set[ModuleProperty.Value] = Set()
+  override def transformations: Set[ModuleProperty.Value] = Set()
+}
+
+class ReTLAToCHCTranspilePassImpl @Inject() (
+    pred: LanguagePred,
+    gen: UniqueNameGenerator,
+    tracker: TransformationTracker)
+    extends ReTLAToVMTTranspilePassImpl(pred, gen, tracker) {
+
+  override val writer = new TlaExToCHCWriter(gen)
 }
